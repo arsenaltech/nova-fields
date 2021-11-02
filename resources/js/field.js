@@ -74,10 +74,6 @@ Nova.booting((Vue, router) => {
   Vue.component('form-nova-fields-items', require('./components/items/FormField'))
   Vue.component('detail-nova-fields-item', require('./components/items/DetailFieldItem'))
 
-  /** FileManager */
-  Vue.component('index-nova-fields-filemanager', require('./components/filemanager/IndexField'));
-  Vue.component('detail-nova-fields-filemanager', require('./components/filemanager/DetailField'));
-  Vue.component('form-nova-fields-filemanager', require('./components/filemanager/FormField'));
 
   /** Date */
   Vue.component(
@@ -242,12 +238,4 @@ Nova.booting((Vue, router) => {
     'form-nova-fields-belongs-to',
     require('./components/belongs-to/FormField')
   )
-
-  router.addRoutes([
-    {
-      name: 'nova-filemanager',
-      path: '/nova-filemanager',
-      component: require('./components/Tool'),
-    },
-  ]);
 })

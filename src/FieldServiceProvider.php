@@ -32,20 +32,6 @@ class FieldServiceProvider extends ServiceProvider
         $this->loadTranslations(__DIR__ . '/../resources/lang', 'nova-fields-multiselect', true);
 
 
-        $this->publishes([
-            __DIR__.'/../config/config.php' => config_path('filemanager.php'),
-        ], 'filemanager-config');
-
-        $this->loadViewsFrom(__DIR__.'/../resources/views', 'nova-fields');
-
-        $this->app->booted(function () {
-            $this->routeConfiguration();
-        });
-
-        Nova::serving(function (ServingNova $event) {
-            Nova::script('nova-fields-filemanager', __DIR__.'/../dist/js/field.js');
-            // Nova::style('nova-fields-filemanager', __DIR__.'/../dist/css/field.css');
-        });
     }
 
     /**
