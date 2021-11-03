@@ -8,7 +8,7 @@
       :wrapper-classes="panelWrapperClasses"
   >
       <slot  name="value">
-        <p class="text-90" :title="this.field.value" :aria-label="this.field.value">{{ getOptionLabel(value) }}</p>
+        <p class="text-90" :title="field.value" :aria-label="field.value">{{ getOptionLabel(value) }}</p>
         <span v-if="hasOptionHint(value)" :class="[errorClasses, inputClasses]" class="radio-hint mt-1 block text-sm text-80 leading-normal">{{ getOptionHint(value) }}</span>
       </slot>
   </r64-panel-item>

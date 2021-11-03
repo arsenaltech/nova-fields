@@ -53483,7 +53483,7 @@ var render = function() {
             "p",
             {
               staticClass: "text-90",
-              attrs: { title: this.field.value, "aria-label": this.field.value }
+              attrs: { title: _vm.field.value, "aria-label": _vm.field.value }
             },
             [_vm._v(_vm._s(_vm.getOptionLabel(_vm.value)))]
           ),
