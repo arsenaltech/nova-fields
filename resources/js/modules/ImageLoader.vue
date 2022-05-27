@@ -2,10 +2,10 @@
   <transition name="fade">
     <template v-if="view == 'grid'">
 
-      <div @click="clickStrategy"
-           ref="card"
-           :loading="loading"
-           class="card relative flex flex-wrap justify-center border border-lg border-50 overflow-hidden px-0 py-0 cursor-pointer"
+      <div
+          ref="card"
+          :loading="loading"
+          class="card relative flex flex-wrap justify-center border border-lg border-50 overflow-hidden px-0 py-0 cursor-pointer"
       >
         <template v-if="loading">
           <div class="rounded-lg flex items-center justify-center absolute pin z-50">
@@ -17,18 +17,17 @@
 
         </div>
 
-        <div  v-if="file.mime == 'image'" ref="image" class="image-block block w-full h-5/6">
+        <div @click="clickStrategy('name')" v-if="file.mime == 'image'" ref="image" class="image-block block w-full h-5/6">
 
         </div>
 
         <div class="actions-grid absolute pin-t pin-r pr-2 pt-2 pb-1 pl-2 "
-             :class="{ 'hidden': !multiSelecting , 'bg-50' : shouldShowHover}"
         >
-          <div v-if="multiSelecting">
+          <div @click="clickStrategy('checkbox')">
             <input :checked="selected" type="checkbox">
           </div>
 
-          <div v-else class="flex flex-wrap text-70" >
+          <div v-if="!multiSelecting" class="flex flex-wrap text-70" :class="{ 'hidden': !multiSelecting , 'bg-50' : shouldShowHover}">
             <div class="cursor-pointer" :class="{ ' mr-2' : renamePermission }" v-if="deletePermission" @click.prevent="deleteFile($event)">
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-labelledby="delete" class="fill-current"><path fill-rule="nonzero" d="M6 4V2a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2h5a1 1 0 0 1 0 2h-1v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6H1a1 1 0 1 1 0-2h5zM4 6v12h12V6H4zm8-2V2H8v2h4zM8 8a1 1 0 0 1 1 1v6a1 1 0 0 1-2 0V9a1 1 0 0 1 1-1zm4 0a1 1 0 0 1 1 1v6a1 1 0 0 1-2 0V9a1 1 0 0 1 1-1z"></path></svg>
             </div>
@@ -44,7 +43,7 @@
           </p>
         </div>
 
-        <div class="h-1/6 w-full text-center text-xs  border-t border-30 bg-50 flex items-center justify-center">
+        <div @click="clickStrategy('name')" class="h-1/6 w-full text-center text-xs  border-t border-30 bg-50 flex items-center justify-center">
           {{ file.name | truncate(25) }}
         </div>
       </div>
