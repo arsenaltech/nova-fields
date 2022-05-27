@@ -267,14 +267,29 @@ class FileManagerService
      *
      * @return  json
      */
-    public function removeFile($file)
+    public function removeFile($files)
     {
-        if ($this->storage->delete($file)) {
-            event(new FileRemoved($this->storage, $file));
+        if(is_array($files)){
+            $counter = 0;
+            foreach ($files as $file){
+                if (isset($file['path']) && $this->storage->delete($file['path'])) {
+                    event(new FileRemoved($this->storage, $file['path']));
+                    $counter++;
+                }
+            }
+            if($counter > 0){
+                return response()->json(true);
+            }else{
+                return response()->json(false);
+            }
+        }else{
+            if ($this->storage->delete($files)) {
+                event(new FileRemoved($this->storage, $files));
 
-            return response()->json(true);
-        } else {
-            return response()->json(false);
+                return response()->json(true);
+            } else {
+                return response()->json(false);
+            }
         }
     }
 
@@ -284,7 +299,7 @@ class FileManagerService
     public function renameFile($file, $newName)
     {
         $path = str_replace(basename($file), '', $file);
-
+        $newName = str_replace(" ","_",$newName);
         try {
             if ($this->storage->move($file, $path.$newName)) {
                 $fullPath = $this->storage->path($path.$newName);

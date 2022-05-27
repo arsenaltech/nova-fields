@@ -28,10 +28,16 @@ trait GetFiles
     public function getFiles($folder, $order, $filter = false)
     {
         $filesData = $this->storage->listContents($folder);
-        $filesData = $this->normalizeFiles($filesData);
-        $files = [];
 
         $cacheTime = config('filemanager.cache', false);
+
+        $cacheKey = md5($folder);
+        $fileData = cache()->remember($cacheKey, $cacheTime, function () use ($folder) {
+            $filesData = $this->storage->listContents($folder);
+        });
+
+        $filesData = $this->normalizeFiles($filesData);
+        $files = [];
 
         foreach ($filesData as $file) {
             $id = $this->generateId($file);
