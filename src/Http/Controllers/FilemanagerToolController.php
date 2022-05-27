@@ -4,6 +4,7 @@ namespace R64\NovaFields\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Cache;
 use R64\NovaFields\Http\Services\FileManagerService;
 use Laravel\Nova\Http\Requests\NovaRequest;
 
@@ -60,7 +61,11 @@ class FilemanagerToolController extends Controller
     public function upload(Request $request)
     {
         $uploadingFolder = $request->folder ?? false;
-
+        if($request->current !== null) {
+            $cacheKey = $request->current;
+            $cacheKey = trim($cacheKey,"//");
+            Cache::tags($cacheKey)->flush();
+        }
         return $this->service->uploadFile(
             $request->file,
             $request->current ?? '',

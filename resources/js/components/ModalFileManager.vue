@@ -40,8 +40,18 @@
                   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="20" height="20"><path d="M1 4h2v2H1V4zm4 0h14v2H5V4zM1 9h2v2H1V9zm4 0h14v2H5V9zm-4 5h2v2H1v-2zm4 0h14v2H5v-2z"/></svg>
                 </button>
 
+                <select class="form-control form-select mr-3" name="sort_by" id="sort_by" v-model="selectedSortBy" @change="sortListing">
+                  <option value="" selected>Sorting</option>
+                  <option value="filename">Filename</option>
+                  <option value="date">Date</option>
+                  <option value="size">Size</option>
+                </select>
+
                 <button v-if="selectMultiple && selectedFiles.length > 0" type="button" class="btn btn-default btn-primary mr-3" @click="addImages">
                   Add images
+                </button>
+                <button v-if="selectedFiles.length > 0" type="button" class="btn btn-default btn-danger mr-3" @click="openDeleteModal">
+                  Delete
                 </button>
               </div>
 
@@ -101,7 +111,7 @@
 
             <rename-modal ref="renameModal" v-on:refresh="refreshCurrent" />
 
-            <confirm-modal-delete ref="confirmDelete" v-on:refresh="refreshCurrent" />
+            <confirm-modal-delete ref="confirmDelete" :selectedFiles="selectedFiles" :totalFileCount="selectedFiles.length" v-on:refresh="refreshCurrent" />
           </div>
         </div>
       </div>
@@ -203,7 +213,8 @@ export default {
     selectedFiles: [], // { type: 'folder/file', path: '...'' }
     buttons: [],
     multiSelecting: false,
-    selectedData:[]
+    selectedData:[],
+    selectedSortBy:''
   }),
 
   computed: {
@@ -219,12 +230,23 @@ export default {
   },
 
   methods: {
+    sortListing(){
+      if(this.selectedSortBy !== "" && this.files.length > 0){
+        let sortedFiles = [];
+        if(this.selectedSortBy == 'filename'){
+          this.files = this.files.sort((a,b)=> { let x = a.name.toUpperCase(),y = b.name.toUpperCase();  return x == y ? 0 : x > y ? 1 : -1; });
+        }else if(this.selectedSortBy == 'date'){
+          this.files = this.files.sort((a,b)=> (a.date > b.date ? 1 : -1));
+        }else if(this.selectedSortBy == 'size'){
+          this.files = this.files.sort((a,b)=> (a.size > b.size ? 1 : -1));
+        }
+      }
+    },
     getData(folder) {
       this.files = [];
       this.parent = {};
       this.path = [];
       this.loadingfiles = true;
-
       api.getDataField(this.resource, this.name, folder, this.filter,this.selectMultiple)
           .then(result => {
             this.files = result.files;
@@ -252,7 +274,9 @@ export default {
     },
 
     refreshCurrent() {
-      this.getData(this.currentPathFolder);
+      let last_path = sessionStorage.getItem('last_open_folder_path');
+      this.selectedFiles = [];
+      this.getData(this.currentPathFolder || last_path);
     },
 
     goToFolder(path) {
