@@ -29,6 +29,22 @@ class Image extends NovaImage
      */
     public $component = 'nova-fields-file';
 
+    public $isMultiple;
+
+    /**
+     *
+     * @param   bool  $multiple
+     *
+     */
+    public function multiple($multiple = false)
+    {
+        return $this->withMeta(['isMultiple' => $multiple]);
+    }
+
+    public function hideFileName(){
+        return $this->withMeta(['hideFileName' => false]);
+    }
+
     /**
      * Get additional meta information to merge with the element payload.
      *

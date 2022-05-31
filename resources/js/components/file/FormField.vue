@@ -1,46 +1,49 @@
 <template>
   <r64-default-field
-    :hide-field="hideField"
-    :field="field"
-    :hide-label="hideLabelInForms"
-    :field-classes="fieldClasses"
-    :wrapper-classes="wrapperClasses"
-    :label-classes="labelClasses"
+      :hide-field="hideField"
+      :field="field"
+      :hide-label="hideLabelInForms"
+      :field-classes="fieldClasses"
+      :wrapper-classes="wrapperClasses"
+      :label-classes="labelClasses"
   >
     <template slot="field">
       <div
-        v-if="hasValue"
-        class="mb-6"
+          v-if="hasValue"
+          class="mb-6"
       >
         <template v-if="shouldShowLoader">
           <ImageLoader
-            :src="field.thumbnailUrl"
-            class="max-w-xs"
-            @missing="(value) => missing = value"
+              :src="field.thumbnailUrl"
+              class="max-w-xs"
+              @missing="(value) => missing = value"
           />
         </template>
 
-        <template v-if="fileValue && !field.thumbnailUrl">
+        <template v-if="fileValue && !field.thumbnailUrl && field.hideFileName">
           <card class="flex item-center relative border border-lg border-50 overflow-hidden p-4">
             {{ fileValue }}
 
             <DeleteButton
-              :dusk="field.attribute + '-internal-delete-link'"
-              class="ml-auto"
-              v-if="shouldShowRemoveButton"
-              @click="confirmRemoval"
+                :dusk="field.attribute + '-internal-delete-link'"
+                class="ml-auto"
+                v-if="shouldShowRemoveButton"
+                @click="confirmRemoval"
             />
           </card>
         </template>
+        <template v-else-if="imageUrl">
+          <img :src="imageUrl" width="130" height="130">
+        </template>
 
         <p
-          v-if="field.thumbnailUrl"
-          class="mt-3 flex items-center text-sm"
+            v-if="field.thumbnailUrl"
+            class="mt-3 flex items-center text-sm"
         >
           <DeleteButton
-            :dusk="field.attribute + '-delete-link'"
-            v-if="shouldShowRemoveButton"
-            @click="confirmRemoval"
+              :dusk="field.attribute + '-delete-link'"
+              v-if="shouldShowRemoveButton"
+              @click="confirmRemoval"
           >
             <span class="class ml-2 mt-1">
               {{__('Delete')}}
@@ -49,49 +52,49 @@
         </p>
 
         <portal to="modals">
-            <confirm-upload-removal-modal
+          <confirm-upload-removal-modal
               v-if="removeModalOpen"
               @confirm="removeFile"
               @close="closeRemoveModal"
-            />
+          />
         </portal>
       </div>
 
       <span
-        class="form-file mr-4"
-        v-if="!isFilledRowSubfield"
+          class="form-file mr-4"
+          v-if="!isFilledRowSubfield"
       >
         <el-upload
-          v-if="field.draggable"
-          drag
-          action
-          :auto-upload="false"
-          :on-change="fileChange"
-          :show-file-list="false"
+            v-if="field.draggable"
+            drag
+            action
+            :auto-upload="false"
+            :on-change="fileChange"
+            :show-file-list="false"
         >
           <div class="p-8 text-80">
             <div
-              v-if="fileName"
-              class="flex items-center"
+                v-if="fileName"
+                class="flex items-center"
             >
               <span>{{ fileName }}</span>
 
               <button
-                v-if="field.previewBeforeUpload"
-                class="appearance-none cursor-pointer text-70 hover:text-primary ml-3 pt-2"
-                title="Preview"
-                @click.stop.prevent="onPreviewFile"
+                  v-if="field.previewBeforeUpload"
+                  class="appearance-none cursor-pointer text-70 hover:text-primary ml-3 pt-2"
+                  title="Preview"
+                  @click.stop.prevent="onPreviewFile"
               >
                 <icon
-                  type="view"
-                  class="w-8"
+                    type="view"
+                    class="w-8"
                 />
               </button>
 
               <button
-                class="appearance-none cursor-pointer text-70 hover:text-primary ml-3"
-                title="Delete"
-                @click.stop.prevent="removeFile"
+                  class="appearance-none cursor-pointer text-70 hover:text-primary ml-3"
+                  title="Delete"
+                  @click.stop.prevent="removeFile"
               >
                 <icon type="delete" />
               </button>
@@ -101,33 +104,34 @@
         </el-upload>
         <template v-else>
           <input
-            ref="fileField"
-            :dusk="field.attribute"
-            :class="inputClasses"
-            type="file"
-            :id="idAttr"
-            name="name"
-            @change="fileChange"
+              ref="fileField"
+              :dusk="field.attribute"
+              :class="inputClasses"
+              type="file"
+              :id="idAttr"
+              name="name"
+              :multiple="field.isMultiple"
+              @change="fileChange"
           />
           <label
-            :for="labelFor"
-            class="form-file-btn btn btn-default btn-primary"
+              :for="labelFor"
+              class="form-file-btn btn btn-default btn-primary"
           >
-            {{__('Choose File')}}
+            {{ (this.field.isMultiple) ? 'Choose Files' : 'Choose File' }}
           </label>
         </template>
       </span>
 
       <span
-        v-if="!field.draggable && !isFilledRowSubfield"
-        class="text-gray-50"
+          v-if="!field.draggable && !isFilledRowSubfield && (field.hideFileName == undefined ? true : field.hideFileName)"
+          class="text-gray-50"
       >
         {{ currentLabel }}
       </span>
 
       <p
-        v-if="hasError"
-        class="text-xs mt-2 text-danger"
+          v-if="hasError"
+          class="text-xs mt-2 text-danger"
       >
         {{ firstError }}
       </p>
@@ -135,8 +139,8 @@
       <portal to="modals">
         <transition name="fade">
           <modal
-            v-if="showPreview"
-            @modal-close="showPreview = false"
+              v-if="showPreview"
+              @modal-close="showPreview = false"
           >
             <img :src="previewFile">
           </modal>
@@ -160,6 +164,7 @@ export default {
 
   data: () => ({
     file: null,
+    url: null,
     label: 'no file selected',
     fileName: '',
     removeModalOpen: false,
@@ -167,15 +172,19 @@ export default {
     deleted: false,
     uploadErrors: new Errors(),
     showPreview: false,
-    previewFile: null
+    previewFile: null,
   }),
 
   mounted() {
     this.field.fill = formData => {
       if (this.file) {
-        formData.append(this.field.attribute, this.file, this.fileName)
+        formData.append(this.field.attribute, this.file)
       }
     }
+  },
+  created(){
+    this.file = this.field.file;
+    this.fileName = this.field.value;
   },
 
   methods: {
@@ -196,15 +205,33 @@ export default {
         this.fileName = event.name
         this.file = event.raw
       } else {
+        let items = [];
+        let files = event.target.files;
+        for (let i = 0; i < files.length; i++) {
+          items[i] = {
+            type: 'file',
+            path: files[i].name,
+            file: files[i]
+          };
+          this.$emit('input', {
+            file: files[i],
+            name: files[i].name
+          })
+          this.file = files[i];
+          this.fileName = files[i].name;
+          this.previewFile = URL.createObjectURL(this.file);
+        }
         let path = event.target.value
         let fileName = path.match(/[^\\/]*$/)[0]
         this.fileName = fileName
         this.file = this.$refs.fileField.files[0]
+        if(this.field.isMultiple){
+          Nova.$emit('addImages',items);
+        }
       }
-
       this.previewFile = URL.createObjectURL(this.file)
-
       this.emitInputEvent()
+      this.$forceUpdate();
     },
 
     emitInputEvent() {
@@ -252,8 +279,8 @@ export default {
       this.uploadErrors = new Errors()
 
       const uri = this.viaRelationship
-        ? `/nova-api/${resourceName}/${resourceId}/${relatedResourceName}/${relatedResourceId}/field/${attribute}?viaRelationship=${viaRelationship}`
-        : `/nova-api/${resourceName}/${resourceId}/field/${attribute}`
+          ? `/nova-api/${resourceName}/${resourceId}/${relatedResourceName}/${relatedResourceId}/field/${attribute}?viaRelationship=${viaRelationship}`
+          : `/nova-api/${resourceName}/${resourceId}/field/${attribute}`
 
       try {
         await Nova.request().delete(uri)
@@ -312,6 +339,10 @@ export default {
       return this.fileName || this.label
     },
 
+    imageUrl(){
+      return this.file != undefined ? URL.createObjectURL(this.file) : this.field.value;
+    },
+
     /**
      * The ID attribute to use for the file field
      */
@@ -325,8 +356,8 @@ export default {
      */
     labelFor() {
       const hash = Math.random()
-        .toString(36)
-        .substring(7)
+          .toString(36)
+          .substring(7)
       return `file-${this.field.attribute}-${hash}`
     },
 
@@ -335,9 +366,9 @@ export default {
      */
     hasValue() {
       return (
-        Boolean(this.fileValue || this.field.thumbnailUrl) &&
-        !Boolean(this.deleted) &&
-        !Boolean(this.missing)
+          Boolean(this.fileValue || this.field.thumbnailUrl) &&
+          !Boolean(this.deleted) &&
+          !Boolean(this.missing)
       )
     },
 
