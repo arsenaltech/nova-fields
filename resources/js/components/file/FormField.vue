@@ -33,7 +33,7 @@
           </card>
         </template>
         <template v-else-if="imageUrl">
-          <img :src="imageUrl" width="130" height="130">
+          <img :src="imageUrl" width="130" height="150" style="max-height: 150px;">
         </template>
 
         <p
