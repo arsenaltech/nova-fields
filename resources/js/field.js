@@ -1,3 +1,5 @@
+import Vue from "vue";
+
 Nova.booting((Vue, router) => {
   /** Shared */
   Vue.component('r64-default-field', require('./components/DefaultField'))
@@ -214,6 +216,20 @@ Nova.booting((Vue, router) => {
       require('./components/file/DetailField')
   )
   Vue.component('form-nova-fields-file', require('./components/file/FormField'))
+
+  // Vapor File Field
+  Vue.component(
+      'index-nova-fields-vapor-file',
+      require('./components/file/IndexField')
+  )
+  Vue.component(
+      'detail-nova-fields-vapor-file',
+      require('./components/file/DetailField')
+  )
+  Vue.component(
+      'form-nova-fields-vapor-file',
+      require('./components/file/FormField')
+  )
 
   /** Trix */
   Vue.component(

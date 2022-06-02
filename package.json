@@ -32,6 +32,7 @@
     "liquor-tree": "^0.2.70",
     "lodash": "^4.17.21",
     "lodash.debounce": "^4.0.8",
+    "laravel-vapor": "^0.4.0",
     "md5": "^2.3.0",
     "plyr": "^3.6.9",
     "slugify": "^1.6.1",

@@ -46,7 +46,7 @@
               @click="confirmRemoval"
           >
             <span class="class ml-2 mt-1">
-              {{__('Delete')}}
+              {{ __('Delete') }}
             </span>
           </DeleteButton>
         </p>
@@ -96,10 +96,10 @@
                   title="Delete"
                   @click.stop.prevent="removeFile"
               >
-                <icon type="delete" />
+                <icon type="delete"/>
               </button>
             </div>
-            <div v-else>{{__('Click here or drop the file to upload')}}</div>
+            <div v-else>{{ __('Click here or drop the file to upload') }}</div>
           </div>
         </el-upload>
         <template v-else>
@@ -117,7 +117,8 @@
               :for="labelFor"
               class="form-file-btn btn btn-default btn-primary"
           >
-            {{ (this.field.isMultiple) ? 'Choose Files' : 'Choose File' }}
+              <span v-if="uploading">{{ __('Uploading') }} ({{ uploadProgress }}%)</span>
+              <span v-else>{{ (this.field.isMultiple) ? 'Choose Files' : 'Choose File' }}</span>
           </label>
         </template>
       </span>
@@ -151,16 +152,24 @@
 </template>
 
 <script>
-import { FormField, HandlesValidationErrors, Errors } from 'laravel-nova'
-import { Upload } from 'element-ui'
+import {FormField, HandlesValidationErrors, Errors} from 'laravel-nova'
+import {Upload} from 'element-ui'
 import ImageLoader from '../../nova/ImageLoader'
 import DeleteButton from '../../nova/DeleteButton'
 import R64Field from '../../mixins/R64Field'
+import Vapor from 'laravel-vapor'
 
 export default {
+  props: [
+    'resourceId',
+    'relatedResourceName',
+    'relatedResourceId',
+    'viaRelationship',
+  ],
+
   mixins: [HandlesValidationErrors, FormField, R64Field],
 
-  components: { DeleteButton, ImageLoader, 'el-upload': Upload },
+  components: {DeleteButton, ImageLoader, 'el-upload': Upload},
 
   data: () => ({
     file: null,
@@ -171,20 +180,66 @@ export default {
     missing: false,
     deleted: false,
     uploadErrors: new Errors(),
+    vaporFile: {
+      key: '',
+      uuid: '',
+      filename: '',
+      extension: '',
+    },
     showPreview: false,
     previewFile: null,
+    uploading: false,
+    uploadProgress: 0,
   }),
 
   mounted() {
     this.field.fill = formData => {
-      if (this.file) {
-        formData.append(this.field.attribute, this.file)
+      let attribute = this.field.attribute
+
+      if (this.file && !this.isVaporField) {
+        formData.append(attribute, this.file, this.fileName)
+      }
+      if (this.file && this.isVaporField) {
+        console.log("mounted");
+        formData.append(attribute, this.fileName)
+        formData.append('vaporFile[' + attribute + '][key]', this.vaporFile.key)
+        formData.append(
+            'vaporFile[' + attribute + '][uuid]',
+            this.vaporFile.uuid
+        )
+        formData.append(
+            'vaporFile[' + attribute + '][filename]',
+            this.vaporFile.filename
+        )
+        formData.append(
+            'vaporFile[' + attribute + '][extension]',
+            this.vaporFile.extension
+        )
       }
     }
   },
-  created(){
+  created() {
     this.file = this.field.file;
     this.fileName = this.field.value;
+    if (this.file != null && this.fileName != null && this.isVaporField) {
+      this.uploading = true
+      this.$emit('file-upload-started')
+
+      Vapor.store(this.file, {
+        progress: progress => {
+          this.uploadProgress = Math.round(progress * 100)
+        },
+      }).then(response => {
+        this.vaporFile.key = response.key
+        this.vaporFile.uuid = response.uuid
+        this.vaporFile.filename = this.fileName
+        this.vaporFile.extension = extension
+        this.uploading = false
+        this.uploadProgress = 0
+        this.$emit('file-upload-finished')
+      })
+      this.uploading = false;
+    }
   },
 
   methods: {
@@ -225,8 +280,27 @@ export default {
         let fileName = path.match(/[^\\/]*$/)[0]
         this.fileName = fileName
         this.file = this.$refs.fileField.files[0]
-        if(this.field.isMultiple){
-          Nova.$emit('addImages',items);
+
+        if (this.isVaporField) {
+          this.uploading = true
+          this.$emit('file-upload-started')
+
+          Vapor.store(this.$refs.fileField.files[0], {
+            progress: progress => {
+              this.uploadProgress = Math.round(progress * 100)
+            },
+          }).then(response => {
+            this.vaporFile.key = response.key
+            this.vaporFile.uuid = response.uuid
+            this.vaporFile.filename = fileName
+            this.vaporFile.extension = extension
+            this.uploading = false
+            this.uploadProgress = 0
+            this.$emit('file-upload-finished')
+          })
+        }
+        if (this.field.isMultiple) {
+          Nova.$emit('addImages', items);
         }
       }
       this.previewFile = URL.createObjectURL(this.file)
@@ -339,7 +413,7 @@ export default {
       return this.fileName || this.label
     },
 
-    imageUrl(){
+    imageUrl() {
       return this.file != undefined ? URL.createObjectURL(this.file) : this.field.value;
     },
 
@@ -384,7 +458,28 @@ export default {
      */
     shouldShowRemoveButton() {
       return Boolean(this.field.deletable) && !this.isRowSubfield
-    }
+    },
+
+    // /**
+    //  * Return the preview or thumbnail URL for the field.
+    //  */
+    // imageUrl() {
+    //     return this.field.previewUrl || this.field.thumbnailUrl
+    // },
+
+    /**
+     * Determine the maximum width of the field.
+     */
+    maxWidth() {
+      return this.field.maxWidth || 320
+    },
+
+    /**
+     * Determining if the field is a Vapor field.
+     */
+    isVaporField() {
+      return this.field.component == 'nova-fields-vapor-file'
+    },
   }
 }
 </script>
