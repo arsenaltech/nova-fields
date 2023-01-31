@@ -35,15 +35,26 @@
         <input type="text" v-model="searchSelectedOptions" :placeholder="options.searchText2"
                class="w-full form-control form-input form-input-bordered">
         <div class="overflow-x-auto multi-select-box p-0 mt-2 form-input-bordered">
-          <ul class="p-0" v-if="filterSelected.length > 0">
-            <li class="p-2 cursor-pointer hover:bg-40" v-for="(item,index) in filterSelected"
-                v-bind:key="item.id" @click="moveLeft(item)">
+          <draggable :move="checkMove" :list="filterSelected" class="list-group" group="people" @start="drag=true" @end="drag=false" v-if="field.sortable">
+            <div v-if="filterSelected.length > 0" class="p-2 cursor-pointer hover:bg-40" v-for="(item,index) in filterSelected"
+                 v-bind:key="item.id" @click="moveLeft(item)">
               {{ item.label }}
-            </li>
-          </ul>
-          <ul class="p-0 bg-40 h-full text-center" v-else>
-            <li class="p-2"> {{ options.noData2 }}</li>
-          </ul>
+            </div>
+            <div class="p-0 bg-40 h-full text-center" v-else>
+              <li class="p-2"> {{ options.noData2 }}</li>
+            </div>
+          </draggable>
+          <div v-else>
+            <ul class="p-0" v-if="filterSelected.length > 0">
+              <li class="p-2 cursor-pointer hover:bg-40" v-for="(item,index) in filterSelected"
+                  v-bind:key="item.id" @click="moveLeft(item)">
+                {{ item.label }}
+              </li>
+            </ul>
+            <ul class="p-0 bg-40 h-full text-center" v-else>
+              <li class="p-2"> {{ options.noData2 }}</li>
+            </ul>
+          </div>
         </div>
         <div class="flex items-center justify-center py-2">
           <button type="button" class="btn btn-default btn-primary inline-flex items-center relative mr-3"
@@ -59,9 +70,14 @@
 
 
 <script>
+import draggable from 'vuedraggable'
+
 export default {
   name: 'MultiSelectDualBox',
-  props: ["options"],
+  props: ["options","field","parentValue"],
+  components:{
+    draggable
+  },
   data() {
     return {
       selected: [],
@@ -71,7 +87,27 @@ export default {
       value: []
     };
   },
+  updated() {
+    this.updateSelectedOptions();
+  },
   methods: {
+    updateSelectedOptions(){
+      if(this.filterSelected.length > 0){
+        let ids = [];
+        this.filterSelected.forEach((element) => {
+          ids.push(element.value);
+        });
+        let values = {
+          attributes : ids,
+          parentValue : this.parentValue != null ? this.parentValue.value : null
+        }
+        if(this.field.sortable)
+        {
+          this.options.selectedIds = ids;
+        }
+        Nova.$emit(this.field.attribute+'-change',values);
+      }
+    },
     moveRight(item) {
       let vue = this;
       if (typeof item == 'object') {

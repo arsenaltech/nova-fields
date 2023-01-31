@@ -15,7 +15,7 @@
           v-html="field.value"
       />
 
-      <MultiSelectDualBox ref="multi-select-dual-box" :options="options"></MultiSelectDualBox>
+      <MultiSelectDualBox ref="multi-select-dual-box" :parentValue="parentValue" :field="field" :options="options"></MultiSelectDualBox>
       <p v-if="hasError" class="my-2 text-danger">
         {{ firstError }}
       </p>
