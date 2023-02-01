@@ -159,7 +159,7 @@ export default {
       if(this.selected.length > 0){
         let selectedOptions = [];
         for (const resource of this.selected) {
-          if(this.parentOptions.includes(resource.value)){
+          if(typeof this.parentOptions == 'object' && this.parentOptions.includes(resource.value)){
             selectedOptions.push(resource);
           }
         }
@@ -169,7 +169,6 @@ export default {
     setInitialValue() {
       if (this.isMultiselect) {
         const valuesArray = this.getInitialFieldValuesArray();
-        console.log(valuesArray);
         this.value = valuesArray && valuesArray.length ? valuesArray.map(this.getValueFromOptions).filter(Boolean) : [];
       } else {
         this.value = this.getValueFromOptions(this.field.value);

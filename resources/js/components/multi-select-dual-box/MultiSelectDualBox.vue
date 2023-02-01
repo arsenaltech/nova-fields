@@ -98,7 +98,7 @@ export default {
           ids.push(element.value);
         });
         let values = {
-          attributes : ids,
+          value : ids,
           parentValue : this.parentValue != null ? this.parentValue.value : null
         }
         if(this.field.sortable)
