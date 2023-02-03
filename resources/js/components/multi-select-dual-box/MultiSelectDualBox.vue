@@ -11,7 +11,7 @@
         <div class="overflow-x-auto multi-select-box p-0 mt-2 form-input-bordered">
           <ul class="p-0" v-if="filterOptions.length > 0">
             <li class="p-2 cursor-pointer hover:bg-40" v-for="(item,index) in filterOptions"
-                v-bind:key="item.id" @click="moveRight(item)">
+                v-bind:key="item.id" @click="changeValue('right',item)">
               {{ item.label }}
             </li>
           </ul>
@@ -21,7 +21,7 @@
         </div>
         <div class="flex items-center justify-center py-2">
           <button type="button" class="btn btn-default btn-primary inline-flex items-center relative mr-3"
-                  @click="moveRight(-1)">Move All Right
+                  @click="changeValue('right',-1)">Move All Right
           </button>
           <a class="btn btn-link dim cursor-pointer text-80" v-if="searchOptions.length > 0"
              @click="searchOptions = ''">Clear</a>
@@ -37,7 +37,7 @@
         <div class="overflow-x-auto multi-select-box p-0 mt-2 form-input-bordered">
           <draggable :move="checkMove" :list="filterSelected" class="list-group" group="people" @start="drag=true" @end="drag=false" v-if="field.sortable">
             <div v-if="filterSelected.length > 0" class="p-2 cursor-pointer hover:bg-40" v-for="(item,index) in filterSelected"
-                 v-bind:key="item.id" @click="moveLeft(item)">
+                 v-bind:key="item.id" @click="changeValue('left',item)">
               {{ item.label }}
             </div>
             <div class="p-0 bg-40 h-full text-center" v-else>
@@ -47,7 +47,7 @@
           <div v-else>
             <ul class="p-0" v-if="filterSelected.length > 0">
               <li class="p-2 cursor-pointer hover:bg-40" v-for="(item,index) in filterSelected"
-                  v-bind:key="item.id" @click="moveLeft(item)">
+                  v-bind:key="item.id" @click="changeValue('left',item)">
                 {{ item.label }}
               </li>
             </ul>
@@ -58,14 +58,55 @@
         </div>
         <div class="flex items-center justify-center py-2">
           <button type="button" class="btn btn-default btn-primary inline-flex items-center relative mr-3"
-                  @click="moveLeft(-1)">Move All Left
+                  @click="changeValue('left',-1)">Move All Left
           </button>
           <a class="btn btn-link dim cursor-pointer text-80" v-if="searchSelectedOptions.length > 0"
              @click="searchSelectedOptions = ''">Clear</a>
         </div>
       </div>
     </div>
+
+    <modal
+        v-if="openModal"
+        class="change-attribute-modal"
+        data-testid="confirm-action-modal"
+        tabindex="-1"
+        role="dialog"
+        :closes-via-backdrop="true"
+        @modal-close="handleClose"
+    >
+      <div class="relative mx-auto flex justify-center z-20 py-view">
+        <div class="bg-white rounded-lg shadow-lg overflow-hidden " style="width: 460px;">
+          <div class="p-8">
+            <div class="flex justify-between items-center mb-6">
+              <h2 class="text-90 font-normal text-xl">Warning!</h2>
+              <button dusk="cancel-action-button" type="button" class="btn btn-link dim cursor-pointer text-80" @click.prevent="handleClose">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <p class="text-80 leading-normal" v-html="confirmationMessage"></p>
+          </div>
+          <div class="bg-30 px-6 py-3 flex">
+            <div class="ml-auto">
+              <button type="button" class="btn btn-default btn-primary" @click="handleConfirm">Confirm</button>
+              <button type="button" class="btn btn-default btn-primary"
+                      @click="handleClose">Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </modal>
   </div>
+
+  <!--
+          confirmationOnUpdate: this.field.confirmationOnUpdate || false,
+          confirmationOnCreate: this.field.confirmationOnCreate || false,
+          confirmation: this.field.confirmation || false,
+          confirmationMessage: this.field.confirmationMessage || "Are you sure you want to change ?",
+  -->
 </template>
 
 
@@ -74,7 +115,7 @@ import draggable from 'vuedraggable'
 
 export default {
   name: 'MultiSelectDualBox',
-  props: ["options","field","parentValue"],
+  props: ["options","field","parentValue",'resourceId'],
   components:{
     draggable
   },
@@ -84,13 +125,43 @@ export default {
       options: [],
       searchOptions: "",
       searchSelectedOptions: "",
-      value: []
+      value: [],
+      openModal: false,
+      cloneType:"",
+      cloneitem:null,
+      confirmationMessage : this.options.confirmationMessage,
+      isVisibleModal: ((this.resourceId != undefined && this.options.confirmationOnUpdate) || (this.resourceId == undefined && this.options.confirmationOnCreate)  || this.options.confirmation) ? true : false
     };
   },
   updated() {
     this.updateSelectedOptions();
   },
   methods: {
+    handleClose(){
+      this.openModal = false;
+      this.$emit('close');
+    },
+    handleConfirm(){
+      this.openModal = false;
+      if(this.cloneType == 'right'){
+        this.moveRight(this.cloneitem);
+      }else{
+        this.moveLeft(this.cloneitem);
+      }
+    },
+    changeValue(type,item){
+      if(this.isVisibleModal){
+        this.cloneType = type;
+        this.cloneitem = item;
+        this.openModal = true;
+      }else{
+        if(type == 'right'){
+          this.moveRight(item);
+        }else{
+          this.moveLeft(item);
+        }
+      }
+    },
     updateSelectedOptions(){
       if(this.filterSelected.length > 0){
         let ids = [];

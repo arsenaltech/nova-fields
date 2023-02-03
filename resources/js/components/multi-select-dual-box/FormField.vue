@@ -15,7 +15,7 @@
           v-html="field.value"
       />
 
-      <MultiSelectDualBox ref="multi-select-dual-box" :parentValue="parentValue" :field="field" :options="options"></MultiSelectDualBox>
+      <MultiSelectDualBox ref="multi-select-dual-box" :resourceId="resourceId" :parentValue="parentValue" :field="field" :options="options"></MultiSelectDualBox>
       <p v-if="hasError" class="my-2 text-danger">
         {{ firstError }}
       </p>
@@ -45,7 +45,11 @@ export default {
         noData2: this.field.rightEmptyMessage || "No Data Found",
         selected: [], // Array of pre-selected elements (list 2)
         selectedIds:[],
-        options: this.field.options || [] // Array of options (list 1)
+        options: this.field.options || [], // Array of options (list 1)
+        confirmationOnUpdate: this.field.confirmationOnUpdate == true ? true : false,
+        confirmationOnCreate: this.field.confirmationOnCreate == true ? true : false,
+        confirmation: this.field.confirmation == true ? true : false,
+        confirmationMessage: this.field.confirmationMessage || "Are you sure you want to change ?",
       },
       defaultOptions: this.field.options || [],
       parentValue: null,
