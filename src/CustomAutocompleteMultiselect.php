@@ -328,4 +328,35 @@ class CustomAutocompleteMultiselect extends Field implements RelatableField
     {
         // TODO: Implement relationshipType() method.
     }
+
+    public function confirmationOnUpdate($onUpdate = true){
+        return $this->withMeta(['confirmationOnUpdate' => $onUpdate]);
+    }
+
+    public function confirmationOnCreate($onCreate = true){
+        return $this->withMeta(['confirmationOnCreate' => $onCreate]);
+    }
+
+    public function confirmation($confirmation = true){
+        return $this->withMeta(['confirmation' => $confirmation]);
+    }
+
+    public function confirmationTitle($confirmationTitle = 'Title'){
+        return $this->withMeta(['confirmationTitle' => $confirmationTitle]);
+    }
+
+    public function confirmationMessage($confirmationMessage = 'Message'){
+        return $this->withMeta(['confirmationMessage' => $confirmationMessage]);
+    }
+
+    public function jsonSerialize()
+    {
+        return array_merge([
+            'confirmationTitle' => 'Title',
+            'confirmationMessage' => 'Message',
+            'confirmation' => false,
+            'confirmationOnCreate' => false,
+            'confirmationOnUpdate' => false,
+        ],parent::jsonSerialize());
+    }
 }

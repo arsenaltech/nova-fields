@@ -86,6 +86,8 @@
       <p v-if="hasError" class="my-2 text-danger">
         {{ firstError }}
       </p>
+
+      <custom-modal v-if="openModal" @close="handleClose" @confirm="handleConfirm" :confirmation-message="confirmationMessage" :confirmation-title="confirmationTitle"></custom-modal>
     </template>
   </r64-default-field>
 </template>
@@ -97,9 +99,10 @@ import Multiselect from 'vue-multiselect';
 import VueDraggable from 'vuedraggable';
 import debounce from 'lodash/debounce';
 import R64Field from '../../mixins/R64Field'
+import CustomModal from '../CustomModal.vue';
 
 export default {
-  components: { Multiselect, VueDraggable },
+  components: { Multiselect, VueDraggable, CustomModal },
 
   mixins: [FormField, HandlesValidationErrors, HandlesFieldValue,R64Field],
 
@@ -114,6 +117,11 @@ export default {
     isLoading: false,
     isInitialized: false,
     parentOptions :[],
+    confirmationMessage: '',
+    confirmationTitle: '',
+    isVisibleModal: false,
+    openModal:false,
+    cloneSelected:[],
   }),
 
   mounted() {
@@ -138,6 +146,9 @@ export default {
   },
 
   created() {
+    this.confirmationMessage = this.field.confirmationMessage;
+    this.confirmationTitle = this.field.confirmationTitle;
+    this.isVisibleModal = ((this.resourceId != undefined && this.field.confirmationOnUpdate) || (this.resourceId == undefined && this.field.confirmationOnCreate)  || this.field.confirmation) ? true : false;
     Nova.$on(this.field.listensTo+'-change', this.setOptions);
   },
   computed: {
@@ -173,6 +184,7 @@ export default {
       } else {
         this.value = this.getValueFromOptions(this.field.value);
       }
+      this.cloneSelected = this.value;
     },
     fill(formData) {
       if (this.isMultiselect) {
@@ -190,11 +202,36 @@ export default {
         formData.append(this.field.attribute, (this.value && this.value.value) || '');
       }
     },
+    handleClose(){
+      this.openModal = false;
+      if(this.value.length > 0 && this.cloneSelected < this.value){
+        this.value.pop()
+        console.log(this.value);
+      }
+      console.log(this.cloneSelected);
+      console.log(this.value);
+      if(this.cloneSelected > this.value){
+        this.value = this.cloneSelected;
+      }
+    },
+    handleConfirm(){
+      this.openModal = false;
+      this.cloneSelected = this.value;
+      console.log(this.cloneSelected);
+      Nova.$emit(this.field.attribute + '-change', this.value)
+      Nova.$emit(`multiselect-${this.field.attribute}-input`, this.value);
+    },
     handleChange(value) {
       this.value = value;
       this.$nextTick(() => this.repositionDropdown());
-      Nova.$emit(this.field.attribute + '-change', this.value)
-      Nova.$emit(`multiselect-${this.field.attribute}-input`, this.value);
+      if(this.isVisibleModal){
+        this.openModal = true;
+      }else{
+        this.cloneSelected = this.value;
+        console.log(this.cloneSelected);
+        Nova.$emit(this.field.attribute + '-change', this.value)
+        Nova.$emit(`multiselect-${this.field.attribute}-input`, this.value);
+      }
     },
     handleOpen() {
       this.repositionDropdown(true);
