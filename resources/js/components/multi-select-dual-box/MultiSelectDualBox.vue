@@ -144,6 +144,7 @@ export default {
         if(this.field.sortable)
         {
           this.options.selectedIds = ids;
+          this.options.finalSelectedIds = ids;
         }
         Nova.$emit(this.field.attribute+'-change',values);
       }
@@ -162,6 +163,7 @@ export default {
         }
         vue.options.options.splice(0, vue.options.options.length);
       }
+      vue.options.cloneSelected = vue.options.selected;
     },
     moveLeft(item) {
       let vue = this;
@@ -174,7 +176,6 @@ export default {
             vue.options.selectedIds.splice(idIndex, 1);
           }
           vue.options.selected.splice(index, 1);
-          return;
         }
       }else{
         for (var cont = 0; cont < vue.options.selected.length; cont++) {
@@ -186,6 +187,7 @@ export default {
         }
         vue.options.selected.splice(0, vue.options.selected.length);
       }
+      vue.options.cloneSelected = vue.options.selected;
     }
   },
   computed: {
@@ -208,7 +210,7 @@ export default {
           );
         });
       }
-      return vue.options.selected || [];
+      return vue.options.cloneSelected || [];
     }
   }
 };
