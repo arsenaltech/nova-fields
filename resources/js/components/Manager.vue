@@ -151,11 +151,13 @@
                             :selected-files="selectedFiles"
                             :delete-permission="buttons.delete_folder"
                             :rename-permission="buttons.rename_folder"
+                            :move-permission="buttons.move_folder"
                             class="folder-item"
                             :class="{'loading': loadingInfo}"
                             v-on:goToFolderEvent="goToFolder"
                             v-on:rename="rename"
                             v-on:delete="deleteData"
+                            v-on:move="move"
                             v-on:select="select"
                     />
                   </template>
@@ -169,12 +171,14 @@
                         :selected-files="selectedFiles"
                         :delete-permission="buttons.delete_file"
                         :rename-permission="buttons.rename_file"
+                        :move-permission="buttons.move_file"
                         class="file-item"
                         :class="{'loading': loadingInfo}"
                         @missing="(value) => missing = value"
                         v-on:showInfo="showInfo"
                         v-on:rename="rename"
                         v-on:delete="deleteData"
+                        v-on:move="move"
                         v-on:select="select"
                     />
                   </template>
@@ -584,6 +588,10 @@ export default {
 
     deleteData(type, path) {
       this.$emit('delete', type, path);
+    },
+
+    move(type, path) {
+      this.$emit('move', type, path);
     },
 
     select(file) {
