@@ -224,7 +224,6 @@ export default {
       this.parent = {};
       this.path = [];
       this.loadingfiles = true;
-
       api.getDataField(this.resource, this.name, folder, this.filter,this.selectMultiple)
           .then(result => {
             this.files = result.files;
@@ -252,12 +251,13 @@ export default {
     },
 
     refreshCurrent() {
-      this.getData(this.currentPathFolder);
+      let last_path = sessionStorage.getItem('last_open_folder_path');
+      this.selectedFiles = [];
+      this.getData(this.currentPathFolder || last_path);
     },
 
     goToFolder(path) {
       let pathDefault = this.defaultFolder.split('/');
-
       if (path == pathDefault[0]) {
         this.getData(this.defaultFolder);
         this.currentPathFolder = this.defaultFolder;

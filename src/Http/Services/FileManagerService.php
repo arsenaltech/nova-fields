@@ -87,13 +87,11 @@ class FileManagerService
     public function ajaxGetFilesAndFolders(Request $request)
     {
         $folder = $this->cleanSlashes($request->get('folder'));
-
         $isMultipleSelection = $this->cleanSlashes($request->get('isMultipleSelection'));
 
         if (! $this->folderExists($folder)) {
             $folder = '/';
         }
-
         $this->setRelativePath($folder);
 
         $order = $request->get('sort');
@@ -108,7 +106,6 @@ class FileManagerService
         $filters = $this->getAvailableFilters($files);
 
         $parent = (object) [];
-
         if ($files->count() > 0) {
             $folders = $files->filter(function ($file) {
                 return $file->type == 'dir';
@@ -296,7 +293,6 @@ class FileManagerService
 
             return response()->json(['success' => false, 'error' => "Something is wrong to rename file name."]);
         } catch (\Exception $e) {
-            \Log::info($e->getMessage());
             return response()->json(['success' => false, 'error' => $e->getMessage()]);
         }
     }
