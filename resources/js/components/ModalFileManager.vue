@@ -44,10 +44,10 @@
                   Add images
                 </button>
 
-                <button title="Paste to this directory" v-if="movePath.length > 0 && moveType != null" type="button" class="btn btn-default btn-primary mr-3" @click="move">
+                <button title="Paste to this directory" :disabled="isMoveFiles" v-if="movePath.length > 0 && moveType != null" type="button" class="btn btn-default btn-primary mr-3" @click="move">
                   Paste
                 </button>
-                <button title="Paste to this directory" v-if="movePath.length > 0 && moveType != null" type="button" class="btn btn-default btn-primary mr-3" @click="clearClipboard">
+                <button title="Paste to this directory" :disabled="isMoveFiles" v-if="movePath.length > 0 && moveType != null" type="button" class="btn btn-default btn-primary mr-3" @click="clearClipboard">
                   Clear Clipboard
                 </button>
               </div>
@@ -214,6 +214,7 @@ export default {
     selectedData:[],
     moveType:null,
     movePath:'',
+    isMoveFiles:false
   }),
 
   computed: {
@@ -244,6 +245,7 @@ export default {
       }
     },
     moveData(moveType,oldPath, newPath) {
+      this.isMoveFiles = true;
       return api
           .moveFile(moveType,oldPath, newPath)
           .then(result => {
@@ -262,8 +264,10 @@ export default {
                   }
               );
             }
+            this.isMoveFiles = false;
           })
           .catch(error => {
+            this.isMoveFiles = false;
             this.$toasted.show(error.response.data.message, {
               type: 'error',
               duration: 3000,

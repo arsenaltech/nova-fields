@@ -316,7 +316,6 @@ class FileManagerService
         try {
             $path = str_replace(basename($dir), '', $dir);
             $newDir = $path.$newName;
-
             if ($this->storage->exists($newDir)) {
                 return response()->json(['success' => false, 'error' => "The folder exist in current path."]);
             }
@@ -370,19 +369,20 @@ class FileManagerService
     public function moveFile($oldPath, $newPath)
     {
         if ($this->storage->move($oldPath, $newPath)) {
+            $splitOld = explode("/",$oldPath);
+            array_pop($splitOld);
+            $old = implode("/",$splitOld);
             $splitNew = explode("/",$newPath);
             $fileName = array_pop($splitNew);
             $new = implode("/",$splitNew);
             $fullPath = $this->storage->path($newPath);
-            $info = new NormalizeFile($this->storage, $fullPath, $newPath);
             $oldCacheKey = md5($oldPath);
             $newCacheKey = md5($new);
             Cache::forget($oldCacheKey);
             Cache::forget($newCacheKey);
-            Artisan::call("rename:catalog-path", ['old_path' => $oldPath,'new_path'=> $new,'type' => 'file','files' => [$fileName]]);
-            return response()->json(['success' => true, 'data' => $info->toArray()]);
+            Artisan::call("rename:catalog-path", ['old_path' => $old,'new_path'=> $new,'files' => [$fileName]]);
+            return response()->json(['success' => true]);
         }
-
         return response()->json(false);
     }
 
@@ -398,11 +398,13 @@ class FileManagerService
     {
         $dir = $oldPath;
         $newDir = $newPath;
+        $splitOldPath = explode("/",$oldPath);
+        $folderName = array_pop($splitOldPath);
+        $newDir = $newDir != '/' ? $newDir.'/'.$folderName : $folderName;
         $this->storage->makeDirectory($newDir);
 
         $files = $this->storage->files($dir);
         $directories = $this->storage->directories($dir);
-
         $dirNameLength = strlen($dir);
         foreach ($directories as $subDir) {
             $subDirName = substr($dir, $dirNameLength);
@@ -414,15 +416,27 @@ class FileManagerService
         }
 
         $copiedFileCount = 0;
-
         foreach ($files as $file) {
-            $filename = substr($file, $dirNameLength);
-            $this->storage->copy($file, $newDir.$filename) === true ? $copiedFileCount++ : null;
+            $filepath = substr($file, $dirNameLength);
+            $splitOld = explode("/",$file);
+            array_pop($splitOld);
+            $old = implode("/",$splitOld);
+            $splitNew = explode("/",$filepath);
+            $filename = array_pop($splitNew);
+            $new = '';
+            $new = implode("/",$splitNew);
+            if($new != ""){
+                $new = $newDir. ($new[0] != '/' ? '/'.$new : $new);
+            }else{
+                $new = $newDir;
+            }
+            if($this->storage->copy($file, $newDir.$filepath) === true){
+                $copiedFileCount++;
+                Artisan::call("rename:catalog-path", ['old_path' => $old,'new_path'=> $new,'files' => [$filename]]);
+            }
         }
-
         if ($copiedFileCount === count($files)) {
             $this->storage->deleteDirectory($dir);
-            Artisan::call("rename:catalog-path", ['old_path' => $dir,'new_path'=> $newDir]);
         }
 
         $fullPath = $this->storage->path($newDir);
