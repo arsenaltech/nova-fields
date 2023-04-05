@@ -299,7 +299,10 @@ class FileManagerService
         try {
             if ($this->storage->move($file, $path.$newName)) {
                 $fullPath = $this->storage->path($path.$newName);
-
+                $splitOld = explode("/",$file);
+                $oldFileName = array_pop($splitOld);
+                $oldPath = implode("/",$splitOld);
+                Artisan::call("rename:catalog-path", ['old_path' => $oldPath,'new_path'=> $path,'files' => [$newName],'renameType' => 'file_name','old_file_name' => [$oldFileName]]);
                 $info = new NormalizeFile($this->storage, $fullPath, $path.$newName);
 
                 return response()->json(['success' => true, 'data' => $info->toArray()]);
@@ -344,8 +347,15 @@ class FileManagerService
             }
 
             if ($copiedFileCount === count($files)) {
+                $allfiles = $this->storage->allFiles($dir);
+                foreach ($allfiles as $files){
+                    $splitFiles = explode("/",$files);
+                    $filename = array_pop($splitFiles);
+                    $oldDir = implode("/",$splitFiles);
+                    $newSubDir = str_replace($dir,$newDir,$oldDir);
+                    Artisan::call("rename:catalog-path", ['old_path' => $oldDir,'new_path'=> $newSubDir,'files' => [$filename]]);
+                }
                 $this->storage->deleteDirectory($dir);
-                Artisan::call("rename:catalog-path", ['old_path' => $dir,'new_path'=> $newDir]);
             }
 
             $fullPath = $this->storage->path($newDir);
