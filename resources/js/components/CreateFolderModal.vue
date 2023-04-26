@@ -86,6 +86,7 @@ export default {
         } else {
           this.error = true;
           if (result.error) {
+            this.$emit('closeCreateFolderModal', true);
             this.errorPrompt = true;
             this.errorMsg = result.error;
             this.$toasted.show(this.__('Error:') + ' ' + result.error, {
