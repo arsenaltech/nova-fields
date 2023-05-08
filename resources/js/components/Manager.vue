@@ -316,7 +316,7 @@ export default {
 
     removeDirectory() {
       return api.removeDirectory(this.current).then(result => {
-        if (result == true) {
+        if (result.success == true) {
           this.$toasted.show(this.__('Folder removed successfully'), { type: 'success' });
           this.$emit('goToFolderManager', this.getParentFolder());
         } else {
