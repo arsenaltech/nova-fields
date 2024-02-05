@@ -31,6 +31,7 @@ class FilemanagerTool extends BaseTool
 
     public function menu(Request $request)
     {
-        // TODO: Implement menu() method.
+        return MenuSection::make(__(config('nova-filemanager.navigation_label', 'Filemanager')))
+            ->path('/' . config('nova-filemanager.path', 'nova-filemanager'));
     }
 }
