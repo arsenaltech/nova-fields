@@ -5,6 +5,7 @@ namespace R64\NovaFields;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 use Laravel\Nova\Nova;
+use Laravel\Nova\Menu\MenuSection;
 use Laravel\Nova\Tool as BaseTool;
 
 class FilemanagerTool extends BaseTool

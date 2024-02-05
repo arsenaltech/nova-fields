@@ -17,7 +17,7 @@
       <div class="p-3 flex items-center justify-between border-b border-50">
         <div class="w-full flex flex-wrap">
           <div class="w-2/3 flex flex-wrap justify-start">
-            <button @click="refreshCurrent" class="btn btn-default btn-small btn-primary text-white mr-3" :class="{'rotate': loadingfiles}">
+            <button @click="refreshCurrent" class="shadow relative bg-primary-500 hover:bg-primary-400 text-white dark:text-gray-900 cursor-pointer rounded text-sm font-bold focus:outline-none focus:ring ring-primary-200 dark:ring-gray-600 inline-flex items-center justify-center h-9 px-3 shadow relative bg-primary-500 hover:bg-primary-400 text-white dark:text-gray-900 mr-3" :class="{'rotate': loadingfiles}">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path class="heroicon-ui" d="M6 18.7V21a1 1 0 0 1-2 0v-5a1 1 0 0 1 1-1h5a1 1 0 1 1 0 2H7.1A7 7 0 0 0 19 12a1 1 0 1 1 2 0 9 9 0 0 1-15 6.7zM18 5.3V3a1 1 0 0 1 2 0v5a1 1 0 0 1-1 1h-5a1 1 0 0 1 0-2h2.9A7 7 0 0 0 5 12a1 1 0 1 1-2 0 9 9 0 0 1 15-6.7z"/></svg>
             </button>
 
