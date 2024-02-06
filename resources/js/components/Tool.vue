@@ -16,7 +16,7 @@
 
       <div class="p-3 flex items-center justify-between border-b border-50">
         <div class="w-full flex flex-wrap">
-          <div class="w-2/3 flex flex-wrap justify-start">
+          <div class="w-auto flex flex-wrap justify-start">
             <button @click="refreshCurrent" class="shadow relative bg-primary-500 hover:bg-primary-400 text-white dark:text-gray-900 cursor-pointer rounded text-sm font-bold focus:outline-none focus:ring ring-primary-200 dark:ring-gray-600 inline-flex items-center justify-center h-9 px-3 shadow relative bg-primary-500 hover:bg-primary-400 text-white dark:text-gray-900 mr-3" :class="{'rotate': loadingfiles}">
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><path class="heroicon-ui" d="M6 18.7V21a1 1 0 0 1-2 0v-5a1 1 0 0 1 1-1h5a1 1 0 1 1 0 2H7.1A7 7 0 0 0 19 12a1 1 0 1 1 2 0 9 9 0 0 1-15 6.7zM18 5.3V3a1 1 0 0 1 2 0v5a1 1 0 0 1-1 1h-5a1 1 0 0 1 0-2h2.9A7 7 0 0 0 5 12a1 1 0 1 1-2 0 9 9 0 0 1 15-6.7z"/></svg>
             </button>
@@ -53,22 +53,30 @@
             <button title="Paste to this directory" :disabled="isMoveFiles" v-if="movePath.length > 0 && moveType != null" type="button" class="btn btn-default btn-primary mr-3" @click="clearClipboard">
                 Clear Clipboard
             </button>
-        </div>
+          </div>
 
           <!-- Search -->
-          <div class="w-1/3 flex flex-wrap justify-end">
-            <div class="relative w-1/2 max-w-xs pr-3">
-              <template v-if="showFilters">
-                <select class="pl-search form-control form-input form-input-bordered w-full" v-model="filterBy" @change="filterFiles">
-                  <option value="">{{ __('Filter by ...') }}</option>
-                  <option v-for="(filter, key) in filters" :key="'filter_' + key" :value="key">{{ key }}</option>
-                </select>
-              </template>
+          <div class="w-auto flex flex-1 flex-wrap justify-end">
+            <div class="relative md:w-1/3 max-w-xs mr-3">
+              <div class="relative">
+                  <div class="relative">
+                    <template v-if="showFilters">
+                      <select class="pl-search form-control form-input form-input-bordered w-full" v-model="filterBy">
+                        <option value="">{{ __('Filter by ...') }}</option>
+                        <option v-for="(filter, key) in filters" :key="'filter_' + key" :value="key">{{ key }}</option>
+                      </select>
+                    </template>
+                </div>
+              </div>
             </div>
 
-            <div class="relative w-1/2 max-w-xs">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-labelledby="search" role="presentation" class="fill-current absolute search-icon-center ml-3 text-70"><path fill-rule="nonzero" d="M14.32 12.906l5.387 5.387a1 1 0 0 1-1.414 1.414l-5.387-5.387a8 8 0 1 1 1.414-1.414zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"></path></svg>
-              <input v-on:input="searchItems" v-model="search" dusk="filemanager-search" type="search" :placeholder="this.__('Search')" class="pl-search form-control form-input form-input-bordered w-full">
+            <div class="relative md:w-1/2 max-w-xs">
+              <div class="relative">
+                  <div class="relative">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-labelledby="search" role="presentation" class="fill-current absolute search-icon-center ml-3 text-70 mt-2"><path fill-rule="nonzero" d="M14.32 12.906l5.387 5.387a1 1 0 0 1-1.414 1.414l-5.387-5.387a8 8 0 1 1 1.414-1.414zM8 14A6 6 0 1 0 8 2a6 6 0 0 0 0 12z"></path></svg>
+                    <input v-on:input="searchItems" v-model="search" dusk="filemanager-search" type="search" :placeholder="this.__('Search')" class="pl-search form-control form-input form-input-bordered w-full">
+                  </div>
+              </div>
             </div>
           </div>
         </div>
@@ -160,7 +168,6 @@ export default {
     search: '',
     filters: [],
     filterBy: '',
-    filteredExtensions: [],
     showFilters: false,
     multiSelecting: false,
     selectedFiles: [], // { type: 'folder/file', path: '...'' }
@@ -361,18 +368,6 @@ export default {
       api.eventFolderUploaded(this.currentPath + '/' + path);
     },
 
-    filterFiles() {
-      let extensions = _.get(this.filters, this.filterBy);
-
-      if (extensions == null) {
-        this.filteredExtensions = [];
-      }
-
-      if (extensions != null && extensions.length > 0) {
-        this.filteredExtensions = extensions;
-      }
-    },
-
     searchItems: _.debounce(function(e) {
       this.search = e.target.value;
     }, 300),
@@ -398,6 +393,15 @@ export default {
         return '';
       }
       return '';
+    },
+    filteredExtensions() {
+      const filter = _.get(this.filters, this.filterBy);
+
+      if (filter) {
+        return filter;
+      }
+
+      return [];
     },
   },
 
