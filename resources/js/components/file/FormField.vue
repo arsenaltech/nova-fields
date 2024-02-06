@@ -123,11 +123,17 @@
         class="text-gray-50"
       >
         {{ currentLabel }}
+        <button v-if="shouldShowClearButton"
+          class="shadow relative bg-red-500 hover:bg-red-400 text-white dark:text-gray-900 cursor-pointer rounded text-sm font-bold focus:outline-none focus:ring ring-red-200 dark:ring-red-600 inline-flex items-center justify-center h-5 px-3 shadow relative bg-red-500 hover:bg-red-400 text-white dark:text-gray-900"
+          @click="clearFile"
+        >
+          Clear
+        </button>
       </span>
 
       <p
         v-if="hasError"
-        class="text-xs mt-2 text-danger"
+        class="help-text mt-2 help-text-error"
       >
         {{ firstError }}
       </p>
@@ -267,7 +273,14 @@ export default {
           this.uploadErrors = new Errors(error.response.data.errors)
         }
       }
-    }
+    },
+    
+    clearFile() {
+      this.fileName = '';
+      this.file = null;
+      this.previewFile = null;
+      this.emitInputEvent();
+    },
   },
 
   computed: {
@@ -295,15 +308,15 @@ export default {
       return false
     },
 
-    hasError() {
-      return this.uploadErrors.has(this.fieldAttribute)
-    },
+    // hasError() {
+    //   return this.uploadErrors.has(this.fieldAttribute)
+    // },
 
-    firstError() {
-      if (this.hasError) {
-        return this.uploadErrors.first(this.fieldAttribute)
-      }
-    },
+    // firstError() {
+    //   if (this.hasError) {
+    //     return this.uploadErrors.first(this.fieldAttribute)
+    //   }
+    // },
 
     /**
      * The current label of the file field
@@ -353,7 +366,11 @@ export default {
      */
     shouldShowRemoveButton() {
       return Boolean(this.field.deletable) && !this.isRowSubfield
-    }
+    },
+
+    shouldShowClearButton() {
+      return !!this.file && !this.isFilledRowSubfield;
+    },
   }
 }
 </script>
