@@ -127,7 +127,7 @@
 
       <p
         v-if="hasError"
-        class="text-xs mt-2 text-danger"
+        class="help-text mt-2 help-text-error"
       >
         {{ firstError }}
       </p>
@@ -295,15 +295,15 @@ export default {
       return false
     },
 
-    hasError() {
-      return this.uploadErrors.has(this.fieldAttribute)
-    },
+    // hasError() {
+    //   return this.uploadErrors.has(this.fieldAttribute)
+    // },
 
-    firstError() {
-      if (this.hasError) {
-        return this.uploadErrors.first(this.fieldAttribute)
-      }
-    },
+    // firstError() {
+    //   if (this.hasError) {
+    //     return this.uploadErrors.first(this.fieldAttribute)
+    //   }
+    // },
 
     /**
      * The current label of the file field
