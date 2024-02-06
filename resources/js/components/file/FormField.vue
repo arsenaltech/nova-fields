@@ -58,7 +58,7 @@
       </div>
 
       <span
-        class="form-file mr-4"
+        class="form-file"
         v-if="!isFilledRowSubfield"
       >
         <el-upload
@@ -111,7 +111,7 @@
           />
           <label
             :for="labelFor"
-            class="form-file-btn btn btn-default btn-primary"
+            class="shadow relative bg-primary-500 hover:bg-primary-400 text-white dark:text-gray-900 cursor-pointer rounded text-sm font-bold focus:outline-none focus:ring ring-primary-200 dark:ring-gray-600 inline-flex items-center justify-center h-9 px-3 shadow relative bg-primary-500 hover:bg-primary-400 text-white dark:text-gray-900 mr-3 form-file-btn "
           >
             {{__('Choose File')}}
           </label>
@@ -124,7 +124,7 @@
       >
         {{ currentLabel }}
         <button v-if="shouldShowClearButton"
-          class="shadow relative bg-red-500 hover:bg-red-400 text-white dark:text-gray-900 cursor-pointer rounded text-sm font-bold focus:outline-none focus:ring ring-red-200 dark:ring-red-600 inline-flex items-center justify-center h-5 px-3 shadow relative bg-red-500 hover:bg-red-400 text-white dark:text-gray-900"
+          class="shadow relative bg-red-500 hover:bg-red-400 text-white dark:text-gray-900 cursor-pointer rounded text-sm font-bold focus:outline-none focus:ring ring-red-200 dark:ring-red-600 inline-flex items-center justify-center h-9 px-3 shadow relative bg-red-500 hover:bg-red-400 text-white dark:text-gray-900"
           @click="clearFile"
         >
           Clear
