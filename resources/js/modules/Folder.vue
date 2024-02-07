@@ -2,7 +2,7 @@
   <transition name="fade">
     <template v-if="view == 'grid'">
       <div @click="clickStrategy" ref="card" :loading="loading" :class="{ 'opacity-50': dragOver }"
-        class="card relative flex flex-wrap justify-center border border-lg border-50 overflow-hidden px-0 py-0 cursor-pointer">
+        class="card relative flex flex-wrap justify-center border border-lg border-50 dark:border-gray-700 overflow-hidden px-0 py-0 cursor-pointer">
 
         <template v-if="loading">
           <div class="rounded-lg flex items-center justify-center absolute pin z-50 mx-auto w-full">
@@ -57,7 +57,7 @@
           </div>
 
           <div
-            class="h-1/6 w-full text-center text-xs  border-t border-30 bg-gray-500 text-white flex items-center justify-center ">
+            class="h-1/6 w-full text-center text-xs  border-t border-30 dark:border-gray-700 bg-gray-100 dark:bg-gray-700 flex items-center justify-center ">
             {{ file.name }}
           </div>
 
