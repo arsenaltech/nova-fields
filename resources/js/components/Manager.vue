@@ -771,7 +771,7 @@ export default {
 
     filemanagerClass() {
       if (this.view == 'grid') {
-        return 'w-40 h-auto  px-2 mb-3';
+        return 'w-40 h-40  px-2 mb-3';
       } else {
         return 'w-full h-16  px-2 mb-3';
       }
