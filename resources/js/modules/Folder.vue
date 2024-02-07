@@ -20,7 +20,7 @@
           </svg>
 
           <div
-            class="h-1/6 w-full text-center text-xs border-t border-30 bg-gray-500 text-white flex items-center justify-center ">
+            class="h-1/6 w-full text-center text-xs border-t border-30 dark:border-gray-700 bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
             {{ __('Go up') }}
           </div>
         </template>
