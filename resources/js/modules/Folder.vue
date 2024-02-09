@@ -133,10 +133,12 @@
                 @click.prevent="editFolder($event)" />
               <Icon type="trash" class="text-red-500" width="20" height="20" v-if="deletePermission" 
                 @click.prevent="deleteFolder($event)" />
-
+              <Icon type="pencil-alt" class="text-red-500" width="20" height="20" v-if="movePermission" 
+                @click.prevent="moveFolder($event)" />
+              
             </div>
           </td>
-        </tr>
+        </tr> 
       </template>
 
 

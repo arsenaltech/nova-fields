@@ -179,6 +179,15 @@
                         v-if="deletePermission"
                         @click.prevent="deleteFile($event)"
                     />
+                    <Icon
+                        type="pencil-alt"
+                        width="20"
+                        height="20"
+                        class="cursor-pointer hover:opacity-50 mr-2"
+                        v-if="movePermission"
+                        @click.prevent="moveFile($event)"
+                    />
+                   
                 </div>
             </td>
         </tr>
@@ -221,6 +230,11 @@
             default: true,
         },
         renamePermission: {
+            type: Boolean,
+            required: false,
+            default: true,
+        },
+        movePermission: {
             type: Boolean,
             required: false,
             default: true,
@@ -286,6 +300,10 @@
         renameFile(e) {
             this.stopDefaultActions(e);
             this.$emit('rename', 'file', this.file.path);
+        },
+        moveFile(e) {
+            this.stopDefaultActions(e);
+            this.$emit('move', 'file', this.file.path);
         },
         stopDefaultActions(e) {
             e.preventDefault();
