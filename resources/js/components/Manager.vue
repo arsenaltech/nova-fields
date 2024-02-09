@@ -84,7 +84,7 @@
               <tr>
                 <th width="30" v-if="multiSelecting"
                   class="text-center p-2 whitespace-nowrap uppercase text-gray-500 text-xs tracking-wide"></th>
-                <th width="50" class="text-center p-2 whitespace-nowrap uppercase text-gray-500 text-xs tracking-wide"></th>
+                <th width="50" class="text-center p-2 whitespace-nowrap uppercase text-gray-500 text-xs tracking-wide">{{ __('Type') }}</th>
                 <th class="p-2 whitespace-nowrap uppercase text-gray-500 text-xs tracking-wide">
                   {{ __('Name') }}
                 </th>
