@@ -133,9 +133,7 @@
                 @click.prevent="editFolder($event)" />
               <Icon type="trash" class="text-red-500" width="20" height="20" v-if="deletePermission" 
                 @click.prevent="deleteFolder($event)" />
-              <Icon type="pencil-alt" class="text-red-500" width="20" height="20" v-if="movePermission" 
-                @click.prevent="moveFolder($event)" />
-              
+              <Icon type="document-duplicate" class="inline-block inline-block cursor-pointer hover:opacity-50 mr-2 ml-2" width="20" height="20"   v-if="movePermission" @click.prevent="moveFolder($event)" />
             </div>
           </td>
         </tr> 

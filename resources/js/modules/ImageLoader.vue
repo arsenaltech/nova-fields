@@ -180,10 +180,10 @@
                         @click.prevent="deleteFile($event)"
                     />
                     <Icon
-                        type="pencil-alt"
+                        type="document-duplicate"
                         width="20"
                         height="20"
-                        class="cursor-pointer hover:opacity-50 mr-2"
+                        class="inline-block inline-block cursor-pointer hover:opacity-50 mr-2 ml-2"
                         v-if="movePermission"
                         @click.prevent="moveFile($event)"
                     />
