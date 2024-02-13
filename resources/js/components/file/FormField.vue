@@ -42,19 +42,17 @@
             v-if="shouldShowRemoveButton"
             @click="confirmRemoval"
           >
-            <span class="class ml-2 mt-1">
+            <span class="shadow relative bg-red-500 hover:bg-red-400 text-white dark:text-gray-900 cursor-pointer rounded text-sm font-bold focus:outline-none focus:ring ring-red-200 dark:ring-red-600 inline-flex items-center justify-center h-9 px-3 shadow relative bg-red-500 hover:bg-red-400 text-white dark:text-gray-900">
               {{__('Delete')}}
             </span>
           </DeleteButton>
         </p>
-
-        <portal to="modals">
             <confirm-upload-removal-modal
-              v-if="removeModalOpen"
+              :show="removeModalOpen"
               @confirm="removeFile"
               @close="closeRemoveModal"
             />
-        </portal>
+        
       </div>
 
       <span
@@ -158,11 +156,11 @@ import { ElUpload } from 'element-plus'
 import ImageLoader from '../../nova/ImageLoader'
 import DeleteButton from '../../nova/DeleteButton'
 import R64Field from '../../mixins/R64Field'
-
+import ConfirmUploadRemovalModalVue from './ConfirmUploadRemovalModal.vue'
 export default {
   mixins: [HandlesValidationErrors, FormField, R64Field],
 
-  components: { DeleteButton, ImageLoader, 'el-upload': ElUpload },
+  components: { DeleteButton, ImageLoader, 'el-upload': ElUpload,'confirm-upload-removal-modal': ConfirmUploadRemovalModalVue},
 
   data: () => ({
     file: null,
@@ -260,12 +258,12 @@ export default {
       const uri = this.viaRelationship
         ? `/nova-api/${resourceName}/${resourceId}/${relatedResourceName}/${relatedResourceId}/field/${attribute}?viaRelationship=${viaRelationship}`
         : `/nova-api/${resourceName}/${resourceId}/field/${attribute}`
-
       try {
         await Nova.request().delete(uri)
         this.closeRemoveModal()
         this.deleted = true
         this.$emit('file-deleted')
+        Nova.success(this.__('The file was deleted!'))
       } catch (error) {
         this.closeRemoveModal()
 
