@@ -30,7 +30,7 @@
           :active="openModal"
           :currentPath="currentPath"
           :defaultFolder="defaultFolder"
-          :selectMultiple="true"
+          :selectMultiple="field.selectMultiple"
           :filter="field.filterBy"
           :buttons="field.buttons"
           v-on:open-modal="openModalCreateFolder"
