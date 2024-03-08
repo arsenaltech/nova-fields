@@ -11,7 +11,7 @@ use Laravel\Nova\Http\Requests\NovaRequest;
 
 class Filemanager extends Field implements Cover
 {
-    use CoverHelpers,Configurable;
+    use CoverHelpers,Configurable ;
 
     /**
      * The base input classes of the field.
@@ -85,6 +85,8 @@ class Filemanager extends Field implements Cover
      */
     protected $selectMultiple;
 
+    protected $storageDisk;
+
     /**
      * The callback used to determine if the field is readonly.
      *
@@ -102,7 +104,6 @@ class Filemanager extends Field implements Cover
      */
     public function __construct($name, $attribute = null, $resolveCallback = null)
     {
-
         parent::__construct($name, $attribute, $resolveCallback);
 
         $this->setButtons();
@@ -119,6 +120,12 @@ class Filemanager extends Field implements Cover
     public function displayAsImage()
     {
         return $this->withMeta(['display' => 'image']);
+    }
+
+
+    public function storageDisk($disk='s3'){
+        $this->storageDisk = $disk;
+        return $this->withMeta(['storageDisk' => $disk]);
     }
 
     /**
@@ -343,6 +350,7 @@ class Filemanager extends Field implements Cover
     public function resolveInfo()
     {
         if ($this->value) {
+            dd('ddddd');
             $service = new FileManagerService();
 
             $data = $service->getFileInfoAsArray($this->value);
@@ -365,6 +373,7 @@ class Filemanager extends Field implements Cover
     public function resolveThumbnailUrl()
     {
         if ($this->value) {
+            dd('resolveThumbnailUrl');
             $service = new FileManagerService();
 
             $data = $service->getFileInfoAsArray($this->value);
