@@ -60,12 +60,30 @@ class FileManagerService
      */
     public function __construct()
     {
-        $this->disk = config('filemanager.disk', 'public');
+        //$this->disk = config('filemanager.disk', 'public');
+        // $this->exceptFiles = collect([]);
+        // $this->exceptFolders = collect([]);
+        // $this->exceptExtensions = collect([]);
+        // $this->globalFilter = null;
 
+        // try {
+        //     $this->storage = Storage::disk($this->disk);
+        // } catch (InvalidArgumentException $e) {
+        //     throw InvalidConfig::driverNotSupported();
+        // }
+
+        // $this->namingStrategy = app()->makeWith(
+        //     config('filemanager.naming', DefaultNamingStrategy::class),
+        //     ['storage' => $this->storage]
+        // );
+       
+    }
+
+    public function setDisk($disk=''){
+        $this->disk = $disk;
         $this->exceptFiles = collect([]);
         $this->exceptFolders = collect([]);
         $this->exceptExtensions = collect([]);
-        $this->globalFilter = null;
 
         try {
             $this->storage = Storage::disk($this->disk);
