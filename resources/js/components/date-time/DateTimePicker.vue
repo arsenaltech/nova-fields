@@ -69,6 +69,10 @@ export default {
       type: Number,
       default: 0,
     },
+    disableDate:{
+      type: String,
+      default: null
+    }
   },
 
   data: () => ({ flatpickr: null }),
@@ -87,7 +91,7 @@ export default {
 
   methods: {
     createFlatpickr() {
-      this.flatpickr = flatpickr(this.$refs.datePicker, {
+      let options = {
         defaultHour: this.defaultHour,
         defaultMinute: this.defaultMinute,
         enableTime: this.enableTime,
@@ -104,7 +108,11 @@ export default {
         hourIncrement: this.hourIncrement,
         minuteIncrement: this.minuteIncrement,
         locale: { firstDayOfWeek: this.firstDayOfWeek },
-      })
+      };
+      if (this.disableDate !== null) {
+        options.maxDate = this.disableDate;
+      }
+      this.flatpickr = flatpickr(this.$refs.datePicker, options)
     },
 
     onOpen(event) {
