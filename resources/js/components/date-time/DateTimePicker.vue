@@ -69,7 +69,7 @@ export default {
       type: Number,
       default: 0,
     },
-    disableDate:{
+    maxDate:{
       type: String,
       default: null
     }
@@ -109,8 +109,8 @@ export default {
         minuteIncrement: this.minuteIncrement,
         locale: { firstDayOfWeek: this.firstDayOfWeek },
       };
-      if (this.disableDate !== null) {
-        options.maxDate = this.disableDate;
+      if (this.maxDate !== null) {
+        options.maxDate = this.maxDate;
       }
       this.flatpickr = flatpickr(this.$refs.datePicker, options)
     },

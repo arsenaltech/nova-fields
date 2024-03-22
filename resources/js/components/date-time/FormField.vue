@@ -30,7 +30,7 @@
             :enable-seconds="enableSeconds"
             :enable-time="enableTime"
             :disabled="isReadonly"
-            :disable-date="disableDate"
+            :maxDate="maxDate"
         />
 
         <a
@@ -154,8 +154,8 @@ export default {
     defaultMinute() {
       return this.field.defaultMinute || 0
     },
-    disableDate(){
-      return this.field.disableDate || null
+    maxDate(){
+      return this.field.maxDate || null
     }
   },
 
