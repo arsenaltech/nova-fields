@@ -94,4 +94,8 @@ class DateTime extends NovaDateTime
     {
         return $this->withMeta([__FUNCTION__ => $value]);
     }
+    public function maxDate($value)
+    {
+        return $this->withMeta([__FUNCTION__ => $value]);
+    }
 }
