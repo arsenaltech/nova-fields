@@ -41,7 +41,7 @@ export default {
     value: [],
     classes: {
       true: 'bg-green-100 text-green-500',
-      false: 'bg-red-100 text-red-500',
+      false: 'bg-red-100 help-text-error',
     },
   }),
 

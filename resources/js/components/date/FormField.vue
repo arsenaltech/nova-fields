@@ -39,7 +39,7 @@
       </div>
       <p
           v-if="hasError"
-          class="my-2 text-red-500"
+          class="my-2 help-text-error"
       >
         {{ firstError }}
       </p>
