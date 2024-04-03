@@ -39,7 +39,7 @@
       </div>
       <p
           v-if="hasError"
-          class="my-2 help-text help-text-error"
+          class="help-text mt-2 help-text-error"
       >
         {{ firstError }}
       </p>

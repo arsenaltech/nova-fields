@@ -73,7 +73,7 @@
       >
         {{ __(reorderMode ? 'novaMultiselect.doneReordering' : 'novaMultiselect.reorder') }}
       </div>
-      <p v-if="hasError" class="my-2 help-text help-text-error">
+      <p v-if="hasError" class="help-text mt-2 help-text-error">
         {{ firstError }}
       </p>
     </template>
