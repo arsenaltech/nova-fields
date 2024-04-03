@@ -20,7 +20,7 @@
         :with-files="field.withFiles"
       />
 
-      <p v-if="hasError" class="my-2 help-text-error">
+      <p v-if="hasError" class="my-2 help-text help-text-error">
         {{ firstError }}
       </p>
     </template>

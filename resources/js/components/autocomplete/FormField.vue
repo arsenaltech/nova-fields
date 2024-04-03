@@ -22,7 +22,7 @@
 
       <p
         v-if="hasError"
-        class="my-2 help-text-error"
+        class="my-2 help-text help-text-error"
       >
         {{ firstError }}
       </p>
