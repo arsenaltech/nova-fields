@@ -165,7 +165,7 @@ export default {
     },
     minDate(){
       return this.field.minDate || null
-    },
+    }
   },
 
 }
