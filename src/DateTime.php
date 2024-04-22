@@ -70,10 +70,6 @@ class DateTime extends NovaDateTime
         return $this->withMeta([__FUNCTION__ => $minutes]);
     }
 
-    public function usesTwelveHourTime($usesTwelveHourTime)
-    {
-        return $this->withMeta([__FUNCTION__ => $usesTwelveHourTime]);
-    }
     /**
      * @param  bool  $time
      */

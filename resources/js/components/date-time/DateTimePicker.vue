@@ -105,7 +105,7 @@ export default {
         altFormat: this.altFormat,
         allowInput: true,
         // static: true,
-        time_24hr: !this.twelveHourTime,
+        time_24hr: !this.enableMinutes ? false : !this.twelveHourTime,
         hourIncrement: this.hourIncrement,
         minuteIncrement: this.minuteIncrement,
         locale: { firstDayOfWeek: this.firstDayOfWeek },
