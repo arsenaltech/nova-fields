@@ -57,6 +57,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    enableMinutes:{
+      type: Boolean,
+      default: true,
+    },
     defaultHour: {
       type: Number,
       default: 12,
@@ -87,11 +91,12 @@ export default {
 
   methods: {
     createFlatpickr() {
-      this.flatpickr = flatpickr(this.$refs.datePicker, {
+      let options = {
         defaultHour: this.defaultHour,
         defaultMinute: this.defaultMinute,
         enableTime: this.enableTime,
         enableSeconds: this.enableSeconds,
+        enableMinutes: this.enableMinutes,
         onOpen: this.onOpen,
         onClose: this.onClose,
         onChange: this.onChange,
@@ -100,11 +105,21 @@ export default {
         altFormat: this.altFormat,
         allowInput: true,
         // static: true,
-        time_24hr: !this.twelveHourTime,
+        time_24hr: !this.enableMinutes ? false : !this.twelveHourTime,
         hourIncrement: this.hourIncrement,
         minuteIncrement: this.minuteIncrement,
         locale: { firstDayOfWeek: this.firstDayOfWeek },
-      })
+      };
+
+      this.flatpickr = flatpickr(this.$refs.datePicker, options);
+      if (!this.enableMinutes) {
+        this.$nextTick(() => {
+          let timeContainer = this.flatpickr.calendarContainer.querySelector('.flatpickr-time');
+          let minuteInput = timeContainer.querySelector('.flatpickr-minute');
+          minuteInput.parentNode.remove();
+          timeContainer.querySelector('.flatpickr-time-separator').remove();
+        });
+      }
     },
 
     onOpen(event) {
