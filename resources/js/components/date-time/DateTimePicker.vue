@@ -109,6 +109,14 @@ export default {
         hourIncrement: this.hourIncrement,
         minuteIncrement: this.minuteIncrement,
         locale: { firstDayOfWeek: this.firstDayOfWeek },
+        onReady: (selectedDates, dateStr, instance) => {
+          if (!this.enableMinutes) {
+            let hourInput = instance.calendarContainer.querySelector('.flatpickr-hour');
+            if (hourInput) {
+              hourInput.disabled = true;
+            }
+          }
+        }
       };
 
       this.flatpickr = flatpickr(this.$refs.datePicker, options);
