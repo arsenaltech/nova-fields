@@ -32,7 +32,6 @@
             :enable-time="enableTime"
             :disabled="isReadonly"
             :maxDate="maxDate"
-            :minDate="minDate"
         />
 
         <a
@@ -105,7 +104,7 @@ export default {
         let date = new Date(value);
         if ((!isNaN(date) && date instanceof Date)) {
           let onlyDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2) + " " + ('0' + date.getHours()).slice(-2) + ":00" + ":00";
-          if (!this.field.enableTime) {
+          if (this.field.maxDate) {
             onlyDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2) + "";
           }
           this.value = onlyDate;
@@ -167,9 +166,6 @@ export default {
     maxDate(){
       return this.field.maxDate || null
     },
-    minDate(){
-      return this.field.minDate || null
-    }
   },
 
 }
