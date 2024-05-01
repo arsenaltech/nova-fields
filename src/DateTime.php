@@ -62,6 +62,13 @@ class DateTime extends NovaDateTime
     {
         return $this->withMeta([__FUNCTION__ => $seconds]);
     }
+    /**
+     * @param  bool  $minutes
+     */
+    public function enableMinutes($minutes)
+    {
+        return $this->withMeta([__FUNCTION__ => $minutes]);
+    }
 
     /**
      * @param  bool  $time

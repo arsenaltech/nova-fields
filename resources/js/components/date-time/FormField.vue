@@ -28,6 +28,7 @@
             :default-hour="defaultHour"
             :default-minute="defaultMinute"
             :enable-seconds="enableSeconds"
+            :enable-minutes="enableMinutes"
             :enable-time="enableTime"
             :disabled="isReadonly"
             :maxDate="maxDate"
@@ -150,6 +151,9 @@ export default {
     },
     enableSeconds() {
       return this.field.enableSeconds === false ? false : true
+    },
+    enableMinutes(){
+      return this.field.enableMinutes === false ? false : true
     },
     enableTime() {
       return this.field.enableTime === false ? false : true
