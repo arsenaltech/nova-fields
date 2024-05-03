@@ -105,4 +105,8 @@ class DateTime extends NovaDateTime
     {
         return $this->withMeta([__FUNCTION__ => $value]);
     }
+    public function minDate($value)
+    {
+        return $this->withMeta([__FUNCTION__ => $value]);
+    }
 }

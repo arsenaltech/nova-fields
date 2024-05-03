@@ -32,6 +32,7 @@
             :enable-time="enableTime"
             :disabled="isReadonly"
             :maxDate="maxDate"
+            :minDate="minDate"
         />
 
         <a
@@ -165,6 +166,9 @@ export default {
     },
     maxDate(){
       return this.field.maxDate || null
+    },
+    minDate(){
+      return this.field.minDate || null
     },
   },
 

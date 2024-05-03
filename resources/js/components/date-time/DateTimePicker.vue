@@ -76,7 +76,11 @@ export default {
     maxDate:{
       type: String,
       default: null
-    }
+    },
+    minDate:{
+      type: String,
+      default: null
+    },
   },
 
   data: () => ({ flatpickr: null }),
@@ -124,6 +128,9 @@ export default {
       };
       if (this.maxDate !== null) {
         options.maxDate = this.maxDate;
+      }
+      if (this.minDate !== null) {
+        options.minDate = this.minDate;
       }
       this.flatpickr = flatpickr(this.$refs.datePicker, options);
       if (!this.enableMinutes) {
