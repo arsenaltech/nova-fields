@@ -1,5 +1,13 @@
 <template>
   <div class="filemanager-image-block flex flex-col border-lg border-50 px-0 py-0">
+    <div v-show="false">
+      {{ field }}
+    </div>
+    <div v-show="false" class="image-url">
+      Url : {{ url }}
+      Field url : {{ field.url }}
+      Field value :{{ field.value }}
+    </div>
     <div v-if="field.url || url" class="image-block card flex justify-center w-full h-5/6 px-2">
       <img v-if="!url && field.url" :src="field.url" class="image block w-full self-center" draggable="false">
       <img v-if="url" :src="url" class="image block w-full self-center" draggable="false">

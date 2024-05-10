@@ -237,6 +237,8 @@ export default {
      */
     setInitialValue() {
       this.value = this.field.value || '';
+      console.log('-----setInitialValue-----',this.field)
+
     },
 
     /**
@@ -257,6 +259,7 @@ export default {
       this.selectImageUrl = file.url;
       console.log('-----this.selectImageUrl---',this.selectImageUrl);
       console.log('-----this.value---',this.value);
+      console.log('-----this.field---',this.field);
       this.closeFilemanagerModal();
     },
   },
