@@ -251,9 +251,12 @@ export default {
      */
     setValue(file) {
       file.attribute = this.field.attribute;
+      console.log('-----setValue---',file);
       Nova.$emit("filemanage-value-change",file);
       this.value = file.path;
       this.selectImageUrl = file.url;
+      console.log('-----this.selectImageUrl---',this.selectImageUrl);
+      console.log('-----this.value---',this.value);
       this.closeFilemanagerModal();
     },
   },

@@ -324,6 +324,7 @@ export default {
 
     selectFile() {
       this.closePreview();
+      console.log('-------------selectFile-----------------',this.info)
       this.$emit('selectFile', this.info);
       document.body.style.overflow = 'auto';
     },
