@@ -283,8 +283,8 @@
             this.loading = false;
         },
         imageOnError() {
-            this.missing = true;
-            this.$emit('missing', true);
+            // this.missing = true;
+            // this.$emit('missing', true);
             this.loading = false;
         },
         truncate(text, stop, clamp = '...') {
