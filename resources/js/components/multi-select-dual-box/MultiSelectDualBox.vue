@@ -170,10 +170,7 @@ export default {
     moveLeft(item) {
       let vue = this;
       if (typeof item == 'object') {
-        let index = vue.options.options.indexOf(item) > -1 ? vue.options.options.indexOf(item) : null;
-        if(this.resourceId != undefined && this.resourceId.length > 0){
-          index = vue.options.selected.indexOf(item) > -1 ? vue.options.selected.indexOf(item) : null;
-        }
+        let index = vue.options.selected.indexOf(item) > -1 ? vue.options.selected.indexOf(item) : null;
         if(index != null){
           vue.options.options.push(vue.options.selected[index]);
           let idIndex = vue.options.selectedIds.indexOf(vue.options.selected[index].value);
