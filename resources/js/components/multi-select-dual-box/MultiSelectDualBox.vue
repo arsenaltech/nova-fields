@@ -171,7 +171,7 @@ export default {
       let vue = this;
       if (typeof item == 'object') {
         let index = vue.options.options.indexOf(item) > -1 ? vue.options.options.indexOf(item) : null;
-        if(this.resourceId != undefined && this.resourceId.length > 0){
+        if(index == null){
           index = vue.options.selected.indexOf(item) > -1 ? vue.options.selected.indexOf(item) : null;
         }
         if(index != null){
