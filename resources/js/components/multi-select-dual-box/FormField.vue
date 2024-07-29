@@ -15,10 +15,7 @@
           v-html="field.value"
       />
 
-      <MultiSelectDualBox ref="multi-select-dual-box" :resourceId="resourceId" :parentValue="parentValue" :field="field" :options="options"></MultiSelectDualBox>
-      <p v-if="hasError" class="help-text mt-2 help-text-error">
-        {{ firstError }}
-      </p>
+      <MultiSelectDualBox ref="multi-select-dual-box" :resourceId="resourceId" :parentValue="parentValue" :field="field" :options="options" :hasError="hasError" :error="firstError" ></MultiSelectDualBox>
     </template>
   </r64-default-field>
 </template>
