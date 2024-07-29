@@ -31,6 +31,8 @@
             :enable-minutes="enableMinutes"
             :enable-time="enableTime"
             :disabled="isReadonly"
+            :maxDate="maxDate"
+            :minDate="minDate"
         />
 
         <a
@@ -99,18 +101,23 @@ export default {
      * Update the field's internal value when it's value changes
      */
     handleChange(value) {
-     if(this.field.setDefaultMinuteZero == true && value !== ''){
-       let date = new Date(value);
-       if (!isNaN(date) && date instanceof Date) {
-         let onlyDate = date.getFullYear()+'-'+ ('0' + (date.getMonth()+1)).slice(-2) +'-'+ ('0' + date.getDate()).slice(-2) +" "+('0' + date.getHours()).slice(-2)+":00"+":00";
-         this.value = onlyDate;
-         this.$refs.dateTimePicker.getUpdatedValue(onlyDate);
-       } else {
-         this.value = '';
-       }
-     }else{
-       this.value = value;
-     }
+      if (this.field.setDefaultMinuteZero == true && value !== '') {
+        let date = new Date(value);
+        if ((!isNaN(date) && date instanceof Date)) {
+          let onlyDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2) + " " + ('0' + date.getHours()).slice(-2) + ":00" + ":00";
+          if (this.field.maxDate) {
+            onlyDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2) + "";
+          }
+          this.value = onlyDate;
+          this.$refs.dateTimePicker.getUpdatedValue(onlyDate);
+        } else {
+          if (!value instanceof Event) {
+            this.value = '';
+          }
+        }
+      } else {
+        this.value = value;
+      }
     },
   },
 
@@ -156,6 +163,12 @@ export default {
     },
     defaultMinute() {
       return this.field.defaultMinute || 0
+    },
+    maxDate(){
+      return this.field.maxDate || null
+    },
+    minDate(){
+      return this.field.minDate || null
     },
   },
 
