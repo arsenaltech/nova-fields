@@ -221,7 +221,7 @@ export default {
 
       if(_.isEmpty(this.value) && this.field.defaultValue) {
         if(this.isMultiselect) {
-          this.value = this.options && this.options.length > 0 ? _.find(this.options, {value: this.field.defaultValue}) : [];
+          this.value = this.options && this.options.length > 0 ?[ _.find(this.options, {value: this.field.defaultValue})] : [];
         } else {
           this.value = this.field.defaultValue;
         }
