@@ -54,6 +54,8 @@ export default {
   methods: {
     toggle() {
       this.value = !this.value
+      Nova.$emit('use_in_configurable_product', this.value)
+
     }
   }
 }
