@@ -54,6 +54,7 @@ export default {
   methods: {
     toggle() {
       this.value = !this.value
+      Nova.$emit('booleanChanged', this.value)
     }
   }
 }
