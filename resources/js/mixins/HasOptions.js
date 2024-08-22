@@ -1,10 +1,11 @@
+import { isObject } from "lodash";
 export default {
     methods: {
         /**
          * Just determins if the option could potentially have an option.
          */
         hasOptionHint(option) {
-            return typeof option === 'object';
+            return isObject(option);
         },
 
         /**

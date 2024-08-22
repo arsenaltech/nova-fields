@@ -19,7 +19,7 @@
         </div>
 
         <draggable v-model="fieldsWithValues"
-                   :sort="true"
+                   :sort="field.canDraggable ? true : false"
                    class="dragArea list-group w-full"
                    :scroll-sensitivity="400"
         >
