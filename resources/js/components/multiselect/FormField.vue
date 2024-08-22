@@ -87,6 +87,7 @@ import Multiselect from '@vueform/multiselect';
 import {VueDraggableNext} from 'vue-draggable-next'
 import debounce from 'lodash/debounce';
 import R64Field from '../../mixins/R64Field'
+import _ from "loadsh";
 
 export default {
   components: { Multiselect, draggable : VueDraggableNext},
@@ -217,6 +218,15 @@ export default {
           this.value = this.getValueFromOptions(this.field.value);
         }
       }
+
+      if(_.isEmpty(this.value) && this.field.defaultValue) {
+        if(this.isMultiselect) {
+          this.value = this.options && this.options.length > 0 ?[ _.find(this.options, {value: this.field.defaultValue})] : [];
+        } else {
+          this.value = this.field.defaultValue;
+        }
+      }
+
     },
 
     fill(formData) {
