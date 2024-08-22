@@ -8,7 +8,7 @@
       :wrapper-classes="wrapperClasses"
       :label-classes="labelClasses"
   >
-    <template slot="field">
+    <template #field>
       <div class="flex items-center">
         <DateTimePicker
             class="w-full form-control form-input form-input-bordered"
@@ -16,7 +16,7 @@
             :dusk="field.attribute"
             :name="field.name"
             :placeholder="placeholder"
-            :dateFormat="pickerFormat"
+            :dateFormat="pickerFormat"  
             :alt-format="pickerDisplayFormat"
             :hour-increment="pickerHourIncrement"
             :minute-increment="pickerMinuteIncrement"
@@ -28,8 +28,11 @@
             :default-hour="defaultHour"
             :default-minute="defaultMinute"
             :enable-seconds="enableSeconds"
+            :enable-minutes="enableMinutes"
             :enable-time="enableTime"
             :disabled="isReadonly"
+            :maxDate="maxDate"
+            :minDate="minDate"
         />
 
         <a
@@ -51,7 +54,7 @@
 
       <p
           v-if="hasError"
-          class="my-2 text-danger"
+          class="my-2 text-red-500"
       >
         {{ firstError }}
       </p>
@@ -60,19 +63,15 @@
 </template>
 
 <script>
-import
-{
-  FormField,
-  HandlesValidationErrors,
-  InteractsWithDates,
-} from 'laravel-nova'
+import moment from 'moment';
+import { DependentFormField, HandlesValidationErrors } from '@/mixins'
 import R64Field from "../../mixins/R64Field";
 import DateTimePicker from "./DateTimePicker";
 
 export default {
-  mixins: [HandlesValidationErrors, FormField, InteractsWithDates,  R64Field],
+  mixins: [HandlesValidationErrors, DependentFormField,R64Field],
 
-  data: () => ({ localizedValue: '' }),
+  data: () => ({ localizedValue: ''}),
 
   components: { DateTimePicker },
 
@@ -102,12 +101,21 @@ export default {
      * Update the field's internal value when it's value changes
      */
     handleChange(value) {
-      if(this.field.setDefaultMinuteZero == true && value !== ''){
+      if (this.field.setDefaultMinuteZero == true && value !== '') {
         let date = new Date(value);
-        let onlyDate = date.getFullYear()+'-'+ ('0' + (date.getMonth()+1)).slice(-2) +'-'+ ('0' + date.getDate()).slice(-2) +" "+('0' + date.getHours()).slice(-2)+":00"+":00";
-        this.value = onlyDate;
-        this.$refs.dateTimePicker.getUpdatedValue(onlyDate);
-      }else{
+        if ((!isNaN(date) && date instanceof Date)) {
+          let onlyDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2) + " " + ('0' + date.getHours()).slice(-2) + ":00" + ":00";
+          if (this.field.maxDate) {
+            onlyDate = date.getFullYear() + '-' + ('0' + (date.getMonth() + 1)).slice(-2) + '-' + ('0' + date.getDate()).slice(-2) + "";
+          }
+          this.value = onlyDate;
+          this.$refs.dateTimePicker.getUpdatedValue(onlyDate);
+        } else {
+          if (!value instanceof Event) {
+            this.value = '';
+          }
+        }
+      } else {
         this.value = value;
       }
     },
@@ -144,6 +152,9 @@ export default {
     enableSeconds() {
       return this.field.enableSeconds === false ? false : true
     },
+    enableMinutes(){
+      return this.field.enableMinutes === false ? false : true
+    },
     enableTime() {
       return this.field.enableTime === false ? false : true
     },
@@ -153,6 +164,13 @@ export default {
     defaultMinute() {
       return this.field.defaultMinute || 0
     },
-  }
+    maxDate(){
+      return this.field.maxDate || null
+    },
+    minDate(){
+      return this.field.minDate || null
+    },
+  },
+
 }
 </script>

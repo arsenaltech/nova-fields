@@ -62,6 +62,13 @@ class DateTime extends NovaDateTime
     {
         return $this->withMeta([__FUNCTION__ => $seconds]);
     }
+    /**
+     * @param  bool  $minutes
+     */
+    public function enableMinutes($minutes)
+    {
+        return $this->withMeta([__FUNCTION__ => $minutes]);
+    }
 
     /**
      * @param  bool  $time
@@ -75,6 +82,30 @@ class DateTime extends NovaDateTime
      * @param  bool  $time
      */
     public function setDefaultMinuteZero($value)
+    {
+        return $this->withMeta([__FUNCTION__ => $value]);
+    }
+
+    /**
+     * @param  bool  $time
+     */
+    public function pickerFormat($value)
+    {
+        return $this->withMeta([__FUNCTION__ => $value]);
+    }
+
+    /**
+     * @param  bool  $time
+     */
+    public function pickerDisplayFormat($value)
+    {
+        return $this->withMeta([__FUNCTION__ => $value]);
+    }
+    public function maxDate($value)
+    {
+        return $this->withMeta([__FUNCTION__ => $value]);
+    }
+    public function minDate($value)
     {
         return $this->withMeta([__FUNCTION__ => $value]);
     }

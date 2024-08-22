@@ -14,6 +14,13 @@ class Multiselect extends NovaField implements RelatableField
 {
     use MultiselectBelongsToSupport, Configurable;
 
+    public function relationshipName(){
+
+    }
+
+    public function relationshipType(){
+
+    }
     /**
      * The base input classes of the field.
      *
@@ -32,6 +39,8 @@ class Multiselect extends NovaField implements RelatableField
 
     protected $pageResponseResolveCallback;
     protected $saveAsJSON = false;
+
+    public $creationOption = false;
 
     /**
      * Sets the options available for select.
@@ -350,6 +359,24 @@ class Multiselect extends NovaField implements RelatableField
         return $this->withMeta(['indexValueDisplayLimit' => $limit]);
     }
 
+    public function mode(string $mode = 'single')
+    {
+        return $this->withMeta(['mode' => $mode]);
+    }
+
+    public function createOption(bool $creationOption = true)
+    {
+        return $this->withMeta(['createOption' => $creationOption]);
+    }
+
+    public function jsonSerialize(): array
+    {
+        return array_merge([
+            'createOption' => $this->creationOption,
+            'mode' => 'single'
+        ],parent::jsonSerialize());
+    }
+
     /**
      * Display the field as raw HTML using Vue.
      *
@@ -358,5 +385,21 @@ class Multiselect extends NovaField implements RelatableField
     public function asHtml()
     {
         return $this->withMeta(['asHtml' => true]);
+    }
+
+    /**
+     * Display clear all selection icon
+     *
+     * @return void
+     */
+    public function canClear($bool = true)
+    {
+        return $this->withMeta(['canClear' => $bool]);
+    }
+
+    /** Setting Default Value */
+    public function defaultValue($value = "")
+    {
+        return $this->withMeta(['defaultValue' => $value]);
     }
 }

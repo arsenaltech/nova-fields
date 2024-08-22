@@ -1,13 +1,12 @@
 <template>
   <r64-default-field
-      :hide-field="hideField"
       :field="field"
       :hide-label="hideLabelInForms"
       :field-classes="fieldClasses"
       :wrapper-classes="wrapperClasses"
       :label-classes="labelClasses"
   >
-    <template slot="field">
+    <template #field>
       <input
           ref="theInput"
           v-bind="extraAttributes"
@@ -21,7 +20,7 @@
           :pattern="inputPattern"
           :disabled="readOnly"
           v-model="value"
-          :class="[errorClasses, inputClasses]"
+          :class="[errorClasses, inputClasses, { 'form-input-border-error': hasError }]"
           :placeholder="placeholder"
 
       />
@@ -43,7 +42,7 @@
       >
         {{ __('Customize') }}
       </button>
-      <p v-if="hasError" class="my-2 text-danger">
+      <p v-if="hasError" class="my-2 text-red-500">
         {{ firstError }}
       </p>
     </template>
@@ -54,7 +53,7 @@
 import { FormField, HandlesValidationErrors } from 'laravel-nova'
 import R64Field from '../../mixins/R64Field'
 import slugify from '../../util/slugify'
-
+import mitt from 'mitt'
 export default {
   mixins: [HandlesValidationErrors, FormField,R64Field],
 
@@ -80,8 +79,8 @@ export default {
       this.field.readonly = false
       this.field.extraAttributes.readonly = false
     }
-
-    this.$once('hook:beforeDestroy', () => {
+    const emitter = mitt()
+    emitter.on('hook:beforeDestroy', () => {
       Nova.$off('create-relation-modal-opened', this.removeChangeListener)
       Nova.$off('create-relation-modal-closed', listenToCreateModalClosed)
       this.removeChangeListener()

@@ -349,7 +349,7 @@ class CustomAutocompleteMultiselect extends Field implements RelatableField
         return $this->withMeta(['confirmationMessage' => $confirmationMessage]);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize() : array
     {
         return array_merge([
             'confirmationTitle' => 'Title',

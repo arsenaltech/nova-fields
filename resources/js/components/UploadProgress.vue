@@ -1,5 +1,5 @@
 <template>
-  <div class="stack-uploads fixed pin-b bg-white shadow" v-if="files.length > 0">
+  <div class="stack-uploads fixed bg-white shadow" v-if="files.length > 0">
 
     <div class="files p-4" v-if="type == 'folders'">
       <transition name="fade" >
@@ -21,7 +21,7 @@
     </div>
 
 
-    <div class="files p-4" v-for="(file, indexFiles) in files" v-bind:key="indexFiles" v-else>
+    <div class="files p-4 my-2" v-for="(file, indexFiles) in files" v-bind:key="indexFiles" v-else>
       <transition name="fade" >
         <div class="flex flex-wrap w-full items-center"  v-bind:key="indexFiles" v-if="file.upload == true">
           <div class="preview w-1/3">
@@ -37,7 +37,8 @@
               <div class="text-danger">{{ __('Error on upload') }}</div>
             </template>
             <template v-else>
-              {{ file.name | truncate(15) }} <small v-if="file.progress == 100" class="text-success uppercase">{{ __('Success') }}</small>
+              {{ fileName(file) }} <small v-if="file.progress < 100" class="text-success uppercase"><br>{{ file.progress }}%</small>
+              <small v-if="file.progress == 100" class="text-success uppercase"><br>{{ __('Success') }}</small>
               <progress-module :file="file"></progress-module>
             </template>
           </div>
@@ -52,7 +53,7 @@ import _ from 'lodash';
 import Progress from '../modules/Progress';
 
 let token = document.head.querySelector('meta[name="csrf-token"]');
-
+import axios from 'axios';
 export default {
   props: {
     current: {
@@ -114,7 +115,7 @@ export default {
         },
         onUploadProgress: progressEvent => {
           file.progress = parseInt(
-              Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            Math.round((progressEvent.loaded * 100) / progressEvent.total)
           );
         },
       };
@@ -143,99 +144,87 @@ export default {
     },
 
     uploadFileToServer(file, data, config) {
-      window.axios
-          .post('/nova-r64-api/uploads/add', data, config)
-          .then(response => {
-            if (response.data.success == true) {
-              _.forEach(this.files, fileUpload => {
-                if (fileUpload.name == response.data.name) {
-                  fileUpload.upload = true;
-                }
-              });
-              this.filesUploaded.push(file.id);
-
-              setTimeout(() => {
-                this.$emit('removeFile', file.id);
-              }, 2000);
-            } else {
-              this.$toasted.show(
-                  this.__(
-                      'Error uploading the file. Check your MaxFilesize or permissions'
-                  ),
-                  { type: 'error' }
-              );
-            }
-          })
-          .catch(error => {
-            if (error.response.data.errors) {
-              let errors = error.response.data.errors;
-              let errorsArray = Object.values(errors).flat();
-
-              let errorMessage = errorsArray.join('<br>');
-
-              this.$toasted.show(errorMessage, { type: 'error' });
-            } else {
-              this.$toasted.show(
-                  this.__(
-                      'Error uploading the file. Check your MaxFilesize or permissions'
-                  ),
-                  { type: 'error' }
-              );
-            }
-
-            file.error = true;
+      axios
+        .post('/nova-r64-api/uploads/add', data, config)
+        .then(response => {
+          if (response.data.success == true) {
+            _.forEach(this.files, fileUpload => {
+              if (fileUpload.name == response.data.name) {
+                fileUpload.upload = true;
+              }
+            });
+            this.filesUploaded.push(file.id);
 
             setTimeout(() => {
               this.$emit('removeFile', file.id);
-            }, 1000);
-          });
+            }, 2000);
+          } else {
+            Nova.error(this.__(
+              'Error uploading the file. Check your MaxFilesize or permissions'
+            ), { type: 'error' });
+          }
+        })
+        .catch(error => {
+          if (error.response.data.errors) {
+            let errors = error.response.data.errors;
+            let errorsArray = Object.values(errors).flat();
+
+            let errorMessage = errorsArray.join('<br>');
+
+            Nova.error(errorMessage, { type: 'error' });
+          } else {
+            Nova.error(this.__(
+              'Error uploading the file. Check your MaxFilesize or permissions'
+            ), { type: 'error' });
+          }
+
+          file.error = true;
+
+          setTimeout(() => {
+            this.$emit('removeFile', file.id);
+          }, 1000);
+        });
     },
 
     uploadFolderToServer(file, data, config) {
       data.append('folder', true);
 
-      window.axios
-          .post('/nova-r64-api/uploads/add', data, config)
-          .then(response => {
-            if (response.data.success == true) {
-              _.forEach(this.files, fileUpload => {
-                if (fileUpload.name == response.data.name) {
-                  fileUpload.upload = true;
-                }
-              });
+      axios
+        .post('/nova-r64-api/uploads/add', data, config)
+        .then(response => {
+          if (response.data.success == true) {
+            _.forEach(this.files, fileUpload => {
+              if (fileUpload.name == response.data.name) {
+                fileUpload.upload = true;
+              }
+            });
 
-              this.filesUploaded.push(file.id);
+            this.filesUploaded.push(file.id);
 
-              this.totalPercent = (100 * this.filesUploaded.length) / this.files.length;
+            this.totalPercent = (100 * this.filesUploaded.length) / this.files.length;
 
-              setTimeout(() => {
-                this.$emit('removeFile', file.id);
-              }, 2000);
-            } else {
-              this.$toasted.show(
-                  this.__(
-                      'Error uploading the file. Check your MaxFilesize or permissions'
-                  ),
-                  { type: 'error' }
-              );
-            }
-          })
-          .catch(() => {
-            this.error = true;
-            this.$toasted.show(
-                this.__('Error uploading the file. Check your MaxFilesize or permissions'),
-                { type: 'error' }
-            );
             setTimeout(() => {
               this.$emit('removeFile', file.id);
-            }, 1000);
-          });
+            }, 2000);
+          } else {
+            Nova.error(this.__(
+              'Error uploading the file. Check your MaxFilesize or permissions'
+            ), { type: 'error' });
+          }
+        })
+        .catch(() => {
+          this.error = true;
+          Nova.error(this.__('Error uploading the file. Check your MaxFilesize or permissions'), { type: 'error' });
+          setTimeout(() => {
+            this.$emit('removeFile', file.id);
+          }, 1000);
+        });
     },
-  },
-
-  filters: {
-    truncate: function(text, stop, clamp) {
-      return text.slice(0, stop) + (stop < text.length ? clamp || '...' : '');
+    fileName(file) {
+      if(file != undefined){
+        let text = file.name;
+        return text.slice(0, 25) + (25 < text.length ? '...' : '');
+      }
     },
   },
 };
@@ -247,5 +236,14 @@ export default {
   bottom: 10px;
   width: 300px;
   z-index: 99;
+}
+.w-1\/3 {
+  width: 33.33333%;
+}
+.fixed {
+  position: fixed;
+}
+.pin-b {
+  bottom: 10px !important;
 }
 </style>

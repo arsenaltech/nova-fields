@@ -1,13 +1,13 @@
 <template>
   <r64-default-field
       :field="field"
-      :hide-field="hideField"
+
       :hide-label="hideLabelInForms"
       :field-classes="fieldClasses"
       :wrapper-classes="wrapperClasses"
       :label-classes="labelClasses"
   >
-    <template slot="field">
+    <template #field>
 
       <template v-if="field.value && field.display == 'image'">
         <!--                <div class="card relative card relative border-lg border-50 overflow-hidden px-0 py-0 max-w-xs mb-2">
@@ -74,7 +74,7 @@
           @confirm="removeFile"
           @close="closeRemoveModal"></confirm-modal-remove-file>
 
-      <p v-if="hasError" class="my-2 text-danger">
+      <p v-if="hasError" class="my-2 text-red-500">
         {{ firstError }}
       </p>
     </template>
@@ -156,6 +156,7 @@ export default {
     },
 
     closeFilemanagerModal() {
+      this.$emit('close');
       this.openModal = false;
     },
 
@@ -185,7 +186,7 @@ export default {
     removeFileFromUpload(uploadedFileId) {
       let index = this.filesToUpload.map(item => item.id).indexOf(uploadedFileId);
 
-      this.$delete(this.filesToUpload, index);
+      this.filesToUpload.splice(index,1);
       if (this.filesToUpload.length === 0) {
         if (this.uploadType == 'folders') {
           this.callFolderEvent(this.folderUploadedName);

@@ -10,6 +10,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 import flatpickr from 'flatpickr'
 import 'flatpickr/dist/themes/airbnb.css'
 
@@ -56,6 +57,10 @@ export default {
       type: Boolean,
       default: true,
     },
+    enableMinutes:{
+      type: Boolean,
+      default: true,
+    },
     defaultHour: {
       type: Number,
       default: 12,
@@ -67,6 +72,14 @@ export default {
     firstDayOfWeek: {
       type: Number,
       default: 0,
+    },
+    maxDate:{
+      type: String,
+      default: null
+    },
+    minDate:{
+      type: String,
+      default: null
     },
   },
 
@@ -86,11 +99,12 @@ export default {
 
   methods: {
     createFlatpickr() {
-      this.flatpickr = flatpickr(this.$refs.datePicker, {
+      let options = {
         defaultHour: this.defaultHour,
         defaultMinute: this.defaultMinute,
         enableTime: this.enableTime,
         enableSeconds: this.enableSeconds,
+        enableMinutes: this.enableMinutes,
         onOpen: this.onOpen,
         onClose: this.onClose,
         onChange: this.onChange,
@@ -99,11 +113,34 @@ export default {
         altFormat: this.altFormat,
         allowInput: true,
         // static: true,
-        time_24hr: !this.twelveHourTime,
+        time_24hr: !this.enableMinutes ? false : !this.twelveHourTime,
         hourIncrement: this.hourIncrement,
         minuteIncrement: this.minuteIncrement,
         locale: { firstDayOfWeek: this.firstDayOfWeek },
-      })
+        onReady: (selectedDates, dateStr, instance) => {
+          if (!this.enableMinutes) {
+            let hourInput = instance.calendarContainer.querySelector('.flatpickr-hour');
+            if (hourInput) {
+              hourInput.disabled = true;
+            }
+          }
+        }
+      };
+      if (this.maxDate !== null) {
+        options.maxDate = this.maxDate;
+      }
+      if (this.minDate !== null) {
+        options.minDate = this.minDate;
+      }
+      this.flatpickr = flatpickr(this.$refs.datePicker, options);
+      if (!this.enableMinutes) {
+        this.$nextTick(() => {
+          let timeContainer = this.flatpickr.calendarContainer.querySelector('.flatpickr-time');
+          let minuteInput = timeContainer.querySelector('.flatpickr-minute');
+          minuteInput.parentNode.remove();
+          timeContainer.querySelector('.flatpickr-time-separator').remove();
+        });
+      }
     },
 
     onOpen(event) {
@@ -120,9 +157,7 @@ export default {
     },
 
     getUpdatedValue(value) {
-      if (this.flatpickr) {
-        this.flatpickr.setDate(value);
-      }
+        this.$refs.datePicker.value = value;
     },
 
     clear() {

@@ -22,7 +22,10 @@
                     v-if="preview"
                     @keydown.esc="closePreview"
             >
-                <template slot-scope="scope">
+                <!-- <template slot-scope="scope">
+                    <img :src="file.image" :key="file.id">
+                </template> -->
+                <template #default="scope">
                     <img :src="file.image" :key="file.id">
                 </template>
             </viewer>
@@ -37,11 +40,10 @@
 </template>
 
 <script>
-import { Minimum } from 'laravel-nova';
 
 import 'viewerjs/dist/viewer.css'
 import { component as Viewer }  from 'v-viewer';
-
+import axios from 'axios'
 export default {
     components: {
         Viewer,
@@ -89,7 +91,7 @@ export default {
             toggleOnDblclick: true,
             url: 'data-source',
         },
-        $viewer: null,
+        // $viewer: null,
         images: [],
     }),
 
@@ -111,7 +113,7 @@ export default {
             this.images.push(this.file.image);
         } else {
             Minimum(
-                window.axios.get(this.file.image, {
+                axios.get(this.file.image, {
                     responseType: 'blob',
                 })
             )

@@ -25,6 +25,9 @@ class FieldServiceProvider extends ServiceProvider
             Nova::script('nova-fields', __DIR__.'/../dist/js/field.js');
         });
 
+        Nova::router(['nova', Authorize::class], config('nova-filemanager.path', 'filemanager'))
+            ->group(__DIR__ . '/../routes/inertia.php');
+            
         Route::group($this->routeConfiguration(), function () {
             $this->loadRoutesFrom(__DIR__.'/../routes/api.php');
         });
@@ -40,11 +43,6 @@ class FieldServiceProvider extends ServiceProvider
 
         $this->app->booted(function () {
             $this->routeConfiguration();
-        });
-
-        Nova::serving(function (ServingNova $event) {
-            Nova::script('nova-fields-filemanager', __DIR__.'/../dist/js/field.js');
-            // Nova::style('nova-fields-filemanager', __DIR__.'/../dist/css/field.css');
         });
     }
 

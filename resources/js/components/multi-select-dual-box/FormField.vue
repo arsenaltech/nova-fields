@@ -3,20 +3,20 @@
       :field="field"
       :showHelpText="showHelpText"
       :errors="errors"
-      :hide-field="hideField"
+
       :hide-label="hideLabelInForms"
       :field-classes="fieldClasses"
       :wrapper-classes="wrapperClasses"
       :label-classes="labelClasses"
   >
-    <template slot="field">
+    <template #field>
       <div
           v-if="field.asHtml"
           v-html="field.value"
       />
 
       <MultiSelectDualBox ref="multi-select-dual-box" :resourceId="resourceId" :parentValue="parentValue" :field="field" :options="options"></MultiSelectDualBox>
-      <p v-if="hasError" class="my-2 text-danger">
+      <p v-if="hasError" class="my-2 text-red-500">
         {{ firstError }}
       </p>
     </template>
@@ -39,8 +39,8 @@ export default {
       options: {
         searchText1: this.field.leftPlaceholder || "Search Here...",
         searchText2: this.field.rightPlaceholder || "Search Here...",
-        subHeader1: this.field.leftHeader || "",
-        subHeader2: this.field.rightHeader ||  "",
+        subHeader1: this.field.leftHeader || "Unassigned Items",
+        subHeader2: this.field.rightHeader ||  "Assigned Items",
         noData1: this.field.leftEmptyMessage || "No Data Found",
         noData2: this.field.rightEmptyMessage || "No Data Found",
         selected: [], // Array of pre-selected elements (list 2)
@@ -58,7 +58,13 @@ export default {
     };
   },
   mounted() {
-    this.watchedComponents.forEach(component => {
+    if(this.resourceId != undefined && this.resourceId.length > 0){
+      this.updateOptions(this.resourceId);
+    }else{
+      Nova.$off(this.field.parentAttribute+"-change",this.updateOptions);
+      Nova.$on(this.field.parentAttribute+"-change",this.updateOptions);
+    }
+    /*this.watchedComponents.forEach(component => {
       let attribute = "value";
 
       if (component.field.component === "belongs-to-field") {
@@ -77,14 +83,14 @@ export default {
           },
           { immediate: true }
       );
-    });
+    });*/
   },
   computed: {
-    watchedComponents() {
+    /*watchedComponents() {
       return this.$parent.$children.filter(component => {
         return this.isWatchingComponent(component);
       });
-    },
+    },*/
 
     disabled() {
       return this.options.length == 0;
@@ -99,7 +105,8 @@ export default {
       formData.append(this.field.attribute, ids || '');
     },
 
-    updateOptions() {
+    updateOptions(field_value) {
+      this.parentValue = field_value != null ? field_value : null;
       if (this.parentValue != null && this.parentValue != "") {
         this.options.options = this.defaultOptions;
         Nova.request()
@@ -113,6 +120,7 @@ export default {
               this.loaded = true;
               if (response.data.length > 0){
                 let options = response.data;
+                this.options.cloneSelected = options || [];
                 this.options.selected = options || [];
                 this.options.cloneSelected = options || [];
                 let vue = this;
@@ -128,12 +136,12 @@ export default {
       }
     },
 
-    isWatchingComponent(component) {
+    /*isWatchingComponent(component) {
       return (
           component.field !== undefined &&
           component.field.attribute == this.field.parentAttribute
       );
-    }
+    }*/
   }
 }
 </script>

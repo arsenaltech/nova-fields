@@ -49,12 +49,10 @@ export default {
         if (!valuesArray || !valuesArray.length) return '—';
 
         const values = valuesArray
-          .map(this.getValueFromOptions)
-          .filter(Boolean)
-          .map(val => `${this.isOptionGroups ? `[${val.group}] ` : ''}${val.label}`);
-
+            .map(this.getValueFromOptions)
+            .filter(Boolean)
+            .map(val => `${this.isOptionGroups ? `[${val.group}] ` : ''}${val.label}`);
         const joinedValues = values.join(this.delimiter);
-
         if (this.valueDisplayLimit >= values.length && this.charDisplayLimit >= joinedValues.length) {
           return joinedValues;
         }

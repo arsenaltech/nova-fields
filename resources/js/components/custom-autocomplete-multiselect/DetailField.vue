@@ -44,9 +44,9 @@ export default {
       if (!valuesArray || !valuesArray.length) return;
 
       return valuesArray
-        .map(this.getValueFromOptions)
-        .filter(Boolean)
-        .map(val => `${this.isOptionGroups ? `[${val.group}] ` : ''}${val.label}`);
+          .map(this.getValueFromOptions)
+          .filter(Boolean)
+          .map(val => `${this.isOptionGroups ? `[${val.group}] ` : ''}${val.label}`);
     },
 
     value() {

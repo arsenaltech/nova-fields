@@ -1,6 +1,6 @@
 <template>
   <r64-default-field
-      :hide-field="hideField"
+
       :field="field"
       :hide-label="hideLabelInForms"
       :field-classes="fieldClasses"
@@ -35,7 +35,7 @@ export default {
 
   computed: {
     classes: () => [
-      'bg-20',
+      'bg-20 dark:bg-gray-700',
       'remove-last-margin-bottom',
       'leading-normal',
       'w-full',
