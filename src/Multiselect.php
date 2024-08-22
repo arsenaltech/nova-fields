@@ -396,4 +396,10 @@ class Multiselect extends NovaField implements RelatableField
     {
         return $this->withMeta(['canClear' => $bool]);
     }
+
+    /** Setting Default Value */
+    public function defaultValue($value = "")
+    {
+        return $this->withMeta(['defaultValue' => $value]);
+    }
 }
