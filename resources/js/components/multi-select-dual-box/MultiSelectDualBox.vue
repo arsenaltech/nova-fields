@@ -34,7 +34,7 @@
         </div>
         <input type="text" v-model="searchSelectedOptions" :placeholder="options.searchText2"
                class="w-full form-control form-input form-input-bordered">
-        <div class="overflow-x-auto multi-select-box p-0 mt-2 form-input-bordered multi-select-right-dualbox">
+        <div class="overflow-x-auto multi-select-box p-0 mt-2 form-input-bordered multi-select-right-dualbox" :class="hasError ? 'form-input-border-error' : ''">
           <draggable :move="checkMove" :list="filterSelected" class="list-group list-none" group="people" @start="drag=true" @end="drag=false" v-if="field.sortable">
             <div v-if="filterSelected.length > 0" class="p-2 cursor-pointer hover:bg-40" v-for="(item,index) in filterSelected"
                  v-bind:key="item.id" @click="changeValue('left',item)">
@@ -63,6 +63,9 @@
           <a class="btn btn-link dim cursor-pointer text-80 font-bold " v-if="searchSelectedOptions.length > 0"
              @click="searchSelectedOptions = ''">Clear</a>
         </div>
+        <p v-if="hasError" class="help-text mt-2 help-text-error">
+          {{ error }}
+        </p>
       </div>
     </div>
 
@@ -78,7 +81,7 @@ import {VueDraggableNext} from 'vue-draggable-next';
 import CustomModal from '../CustomModal.vue';
 export default {
   name: 'MultiSelectDualBox',
-  props: ["options","field","parentValue",'resourceId'],
+  props: ["options","field","parentValue",'resourceId', 'hasError', 'error'],
   components:{
     draggable : VueDraggableNext,
     CustomModal
@@ -171,7 +174,7 @@ export default {
       let vue = this;
       if (typeof item == 'object') {
         let index = vue.options.options.indexOf(item) > -1 ? vue.options.options.indexOf(item) : null;
-        if(this.resourceId != undefined && this.resourceId.length > 0){
+        if(index == null){
           index = vue.options.selected.indexOf(item) > -1 ? vue.options.selected.indexOf(item) : null;
         }
         if(index != null){

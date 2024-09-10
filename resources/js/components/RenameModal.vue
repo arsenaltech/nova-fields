@@ -49,7 +49,7 @@
                  id="togglePassword"></i>
             </div>
 
-            <p class="my-2 text-red-500" v-if="error">{{ errorMsg }}</p>
+            <p class="help-text mt-2 help-text-error" v-if="error">{{ errorMsg }}</p>
 
           </template>
 
