@@ -17,7 +17,7 @@
         :disabled="field.readonly"
       />
 
-      <p v-if="hasError" class="my-2 text-red-500" v-html="firstError" />
+      <p v-if="hasError" class="help-text mt-2 help-text-error" v-html="firstError" />
     </template>
   </r64-default-field>
 </template>
@@ -54,6 +54,8 @@ export default {
   methods: {
     toggle() {
       this.value = !this.value
+      Nova.$emit('booleanChanged', this.value)
+      Nova.$emit('booleanfieldAttribute', this.fieldAttribute)
     }
   }
 }

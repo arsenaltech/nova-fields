@@ -131,7 +131,7 @@
 
       <p
         v-if="hasError"
-        class="help-text mt-2 help-text-error"
+        class="help-text mt-2 help-text help-text-error"
       >
         {{ firstError }}
       </p>
