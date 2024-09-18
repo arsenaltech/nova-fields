@@ -55,8 +55,8 @@ export default {
     toggle() {
       this.value = !this.value
       Nova.$emit('booleanChanged', this.value)
-      Nova.$emit('useInConfigurableProduct', this.value)
       Nova.$emit('booleanfieldAttribute', this.fieldAttribute)
+      Nova.$emit('useInConfigurableProduct', this.value)
     }
   }
 }
