@@ -141,6 +141,11 @@ export default {
           timeContainer.querySelector('.flatpickr-time-separator').remove();
         });
       }
+
+      this.$refs.datePicker.addEventListener('input', (event) => {
+        this.$emit('change', this.$refs.datePicker.value)
+      });
+
     },
 
     onOpen(event) {
