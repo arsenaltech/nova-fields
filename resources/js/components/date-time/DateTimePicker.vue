@@ -83,7 +83,7 @@ export default {
     },
   },
 
-  data: () => ({ flatpickr: null }),
+  data: () => ({ flatpickr: null,  isSafari: /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent) }),
 
   watch: {
     value: function (newValue, oldValue) {
@@ -109,7 +109,7 @@ export default {
         onClose: this.onClose,
         onChange: this.onChange,
         dateFormat: this.dateFormat,
-        altInput: true,
+        altInput: !this.isSafari,
         altFormat: this.altFormat,
         allowInput: true,
         // static: true,
