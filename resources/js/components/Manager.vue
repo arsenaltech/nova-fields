@@ -794,24 +794,20 @@ export default {
       }
       return '';
     },
-
     filteredFiles() {
       let filtered = this.files;
-
       if (this.search) {
-        filtered = this.files.filter(m => m.name.toLowerCase().indexOf(this.search.toLowerCase()) > -1);
+        filtered = this.files.filter(m => m.name?.toLowerCase().includes(this.search.toLowerCase()));
       }
-
       if (this.filters.length > 0) {
         filtered = _.filter(filtered, file => {
           if (file.type == 'dir') {
             return true;
           }
-
-          return _.includes(this.filters, file.ext.toLowerCase());
+          const ext = typeof file.ext === 'string' ? file.ext.toLowerCase() : '';
+          return this.filters.includes(ext);
         });
       }
-
       return filtered;
     },
   },
