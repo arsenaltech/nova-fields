@@ -114,6 +114,7 @@ export default {
       this.value = value;
       const data = {'field':this.field,'value':this.value};
       Nova.$emit("updateConfigurableAttributes",data);
+      console.log('selected value',this.value)
       this.$emit('input', this.value)
       if (this.field) {
         Nova.$emit(this.field.attribute + '-change', this.value)
