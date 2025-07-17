@@ -68,6 +68,7 @@ export default {
     toggle(event, option) {
       const firstOption = _(this.value).find(o => o.name == option.name)
       firstOption.checked = event.target.checked
+      this.$emit('input', this.finalPayload)
     },
   },
 
