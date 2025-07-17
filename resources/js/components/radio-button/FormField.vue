@@ -68,6 +68,7 @@ import CanToggle from '../../mixins/CanToggle';
             this.value = e.target.value
             const data = {'field':this.field,'value':this.value};
             Nova.$emit("updateMediaDefault",data);
+            this.$emit('input', this.value)
             if (this.field) {
               Nova.$emit(this.field.attribute + '-change', this.value)
             }
