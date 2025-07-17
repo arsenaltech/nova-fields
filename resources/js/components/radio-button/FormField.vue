@@ -11,7 +11,7 @@
 
       <template #field>
           <label v-for="(option, val) in field.options" :class="{'mb-2' : field.stack || field.addPadding}" :for="`${field.attribute}_${val}`">
-            <input :class="[errorClasses, inputClasses]" @change="handleChange" v-model="value" :value="val" :id="`${field.attribute}_${val}`" :name="field.attribute+index" type="radio" :disabled="field.disabled">
+            <input :class="[errorClasses, inputClasses]" @change="handleChange" v-model="value" :value="val" :id="`${field.attribute}_${val}`" :name="field.attribute" type="radio" :disabled="field.disabled">
             <span class="mlbz-radio-label">{{ getOptionLabel(option) }}</span>
             <span v-if="field.stack && hasOptionHint(option)" class="mlbz-radio-hint mt-1 block text-sm text-80 leading-normal">{{ getOptionHint(option) }}</span>
           </label>
@@ -28,24 +28,7 @@ import CanToggle from '../../mixins/CanToggle';
     export default {
         mixins: [FormField, HandlesValidationErrors, HasOptions, CanToggle,R64Field],
 
-        props: {
-            resourceName: {
-                type: String,
-                default: ''
-            },
-            resourceId: {
-                type: [String, Number],
-                default: ''
-            },
-            field: {
-                type: Object,
-                default: () => ({}) // default as a fresh object
-            },
-            index:{
-                type: [String, Number],
-                default:0
-            }
-        },
+        props: ['resourceName', 'resourceId', 'field'],
 
         computed: {
             rawValue() {
@@ -85,7 +68,6 @@ import CanToggle from '../../mixins/CanToggle';
             this.value = e.target.value
             const data = {'field':this.field,'value':this.value};
             Nova.$emit("updateMediaDefault",data);
-            this.$emit('input', this.value)
             if (this.field) {
               Nova.$emit(this.field.attribute + '-change', this.value)
             }
