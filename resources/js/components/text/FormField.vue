@@ -77,8 +77,7 @@ export default {
   methods:{
     handleChange(event){
         const value = event.target.value
-        console.log('value in child : ',value)
-        this.$emit('input', value) // ✅ this makes v-model or @input receive the value directly
+        this.$emit('updateFieldvalue', value) // ✅ this makes v-model or @updateFieldvalue receive the value directly
     }
   }
 }
