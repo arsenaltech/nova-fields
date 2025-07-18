@@ -77,7 +77,7 @@ export default {
   methods:{
     handleChange(event){
         const value = event.target.value
-        this.$emit('updateFieldvalue', value) // ✅ this makes v-model or @updateFieldvalue receive the value directly
+        this.$emit('updateFieldvalue', value) //[EC-35185] Added Emit Which listning in Product -> Custom Media To update Data In Parent (Don't remove it.)
     }
   }
 }
