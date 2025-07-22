@@ -20,8 +20,8 @@
         v-model="value"
         :class="[errorClasses, inputClasses, { 'form-input-border-error': hasError }]"
         :placeholder="placeholder"
-
         @input="handleChange"
+        @keyup="updateFieldValues"
       />
 
       <p v-if="hasError" class="help-text mt-2 help-text-error">
@@ -75,7 +75,7 @@ export default {
     }
   },
   methods:{
-    handleChange(event){
+    updateFieldValues(event){
         const value = event.target.value
         this.$emit('updateFieldvalue', value) //[EC-35185] Added Emit Which listning in Product -> Custom Media To update Data In Parent (Don't remove it.)
     }
