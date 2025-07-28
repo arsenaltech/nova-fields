@@ -114,6 +114,7 @@ export default {
       this.value = value;
       const data = {'field':this.field,'value':this.value};
       Nova.$emit("updateConfigurableAttributes",data);
+      this.$emit('updateFieldvalue', this.value) //[EC-35185] Added Emit Which listning in Product -> Custom Media To update Data In Parent (Don't remove it.)
       if (this.field) {
         Nova.$emit(this.field.attribute + '-change', this.value)
       }
