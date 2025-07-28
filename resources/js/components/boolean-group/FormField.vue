@@ -68,6 +68,7 @@ export default {
     toggle(event, option) {
       const firstOption = _(this.value).find(o => o.name == option.name)
       firstOption.checked = event.target.checked
+      this.$emit('updateFieldvalue', this.finalPayload) //[EC-35185] Added Emit Which listning in Product -> Custom Media To update Data In Parent (Don't remove it.)
     },
   },
 
