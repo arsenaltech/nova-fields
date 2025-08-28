@@ -88,6 +88,7 @@ import {VueDraggableNext} from 'vue-draggable-next'
 import debounce from 'lodash/debounce';
 import R64Field from '../../mixins/R64Field'
 import _ from "loadsh";
+import axios from "axios";
 
 export default {
   components: { Multiselect, draggable : VueDraggableNext},
@@ -105,6 +106,7 @@ export default {
     distinctValues: [],
     isLoading: false,
     isInitialized: false,
+    cancelTokenSource: null,
   }),
   mounted() {
     window.addEventListener('scroll', this.repositionDropdown);
@@ -333,7 +335,11 @@ export default {
     },
 
     fetchOptions: debounce(async function (search) {
-      const { data } = await Nova.request().get(`${this.field.apiUrl}`, { params: { search } });
+      if (this.cancelTokenSource) {
+        this.cancelTokenSource.cancel("Request canceled due to new input.");
+      }
+      this.cancelTokenSource = axios.CancelToken.source();
+      const { data } = await Nova.request().get(`${this.field.apiUrl}`, { params: { search }, cancelToken: this.cancelTokenSource.token,});
 
       // Response is not an array or an object
       if (typeof data !== 'object') throw new Error('Server response was invalid.');
