@@ -2,6 +2,7 @@
 
 namespace R64\NovaFields;
 
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use JsonSerializable;
 use Laravel\Nova\Fields\Field;
@@ -117,7 +118,7 @@ class Row extends Field implements JsonSerializable
      *
      * @return $this
      */
-    public function hideHeading()
+    public function hideHeading(): Row
     {
         return $this->withMeta(['hideHeading' => true]);
     }
@@ -127,7 +128,7 @@ class Row extends Field implements JsonSerializable
      *
      * @return $this
      */
-    public function hideHeadingWhenEmpty()
+    public function hideHeadingWhenEmpty(): Row
     {
         return $this->withMeta(['hideHeadingWhenEmpty' => true]);
     }
@@ -137,7 +138,7 @@ class Row extends Field implements JsonSerializable
      *
      * @return $this
      */
-    public function sum($field)
+    public function sum($field): Row
     {
         return $this->withMeta(['sum' => $field]);
     }
@@ -147,7 +148,7 @@ class Row extends Field implements JsonSerializable
      *
      * @return $this
      */
-    public function hideSumWhenEmpty()
+    public function hideSumWhenEmpty(): Row
     {
         return $this->withMeta(['hideSumWhenEmpty' => true]);
     }
@@ -157,7 +158,7 @@ class Row extends Field implements JsonSerializable
      *
      * @return $this
      */
-    public function prepopulateRowWhenEmpty()
+    public function prepopulateRowWhenEmpty(): Row
     {
         return $this->withMeta(['prepopulateRowWhenEmpty' => true]);
     }
@@ -167,7 +168,7 @@ class Row extends Field implements JsonSerializable
      *
      * @return $this
      */
-    public function maxRows($rows)
+    public function maxRows($rows): Row
     {
         return $this->withMeta(['maxRows' => $rows]);
     }
@@ -177,7 +178,7 @@ class Row extends Field implements JsonSerializable
      * @param  string  $name
      * @return $this
      */
-    public function addRowText($text)
+    public function addRowText($text): Row
     {
         return $this->withMeta(['addRowText' => $text]);
     }
@@ -188,7 +189,7 @@ class Row extends Field implements JsonSerializable
      * @param  string  $classes
      * @return $this
      */
-    public function headingClasses($classes)
+    public function headingClasses($classes): Row
     {
         $this->headingClasses = $classes;
 
@@ -201,7 +202,7 @@ class Row extends Field implements JsonSerializable
      * @param  string  $classes
      * @return $this
      */
-    public function itemWrapperClasses($classes)
+    public function itemWrapperClasses($classes): Row
     {
         $this->itemWrapperClasses = $classes;
 
@@ -214,7 +215,7 @@ class Row extends Field implements JsonSerializable
      * @param  string  $classes
      * @return $this
      */
-    public function deleteButtonClasses($classes)
+    public function deleteButtonClasses($classes): Row
     {
         $this->deleteButtonClasses = $classes;
 
@@ -227,7 +228,7 @@ class Row extends Field implements JsonSerializable
      * @param  string  $classes
      * @return $this
      */
-    public function sumWrapperClasses($classes)
+    public function sumWrapperClasses($classes): Row
     {
         $this->sumWrapperClasses = $classes;
 
@@ -240,7 +241,7 @@ class Row extends Field implements JsonSerializable
      * @param  string  $classes
      * @return $this
      */
-    public function sumFieldClasses($classes)
+    public function sumFieldClasses($classes): Row
     {
         $this->sumFieldClasses = $classes;
 
@@ -253,7 +254,7 @@ class Row extends Field implements JsonSerializable
      * @param  string  $classes
      * @return $this
      */
-    public function addRowButtonClasses($classes)
+    public function addRowButtonClasses($classes): Row
     {
         $this->addRowButtonClasses = $classes;
 
@@ -266,7 +267,7 @@ class Row extends Field implements JsonSerializable
      * @param  string  $classes
      * @return $this
      */
-    public function rowWrapperClasses($classes)
+    public function rowWrapperClasses($classes): Row
     {
         $this->rowWrapperClasses = $classes;
 
@@ -279,7 +280,7 @@ class Row extends Field implements JsonSerializable
      * @param  string  $classes
      * @return $this
      */
-    public function useWrapperClassesInHeading()
+    public function useWrapperClassesInHeading(): Row
     {
         return $this->withMeta(['useWrapperClassesInHeading' => true]);
     }
@@ -291,7 +292,7 @@ class Row extends Field implements JsonSerializable
      * @param  string|null  $attribute
      * @return void
      */
-    public function resolve($resource, $attribute = null)
+    public function resolve($resource, $attribute = null): void
     {
         $attribute = $attribute ?? $this->attribute;
 
@@ -339,7 +340,7 @@ class Row extends Field implements JsonSerializable
      * @param  array  $rules
      * @return array
      */
-    protected function generateRules($rules)
+    protected function generateRules($rules): array
     {
         return collect($rules)->mapWithKeys(function ($rules, $key) {
             return [$this->attribute . '.*.' . $key => $rules];
@@ -352,7 +353,7 @@ class Row extends Field implements JsonSerializable
      * @param  array  $fields
      * @return Collection
      */
-    protected function prepareFields($fields)
+    protected function prepareFields($fields): Collection
     {
         return collect($fields)->each(function($field) {
             if($field->isReadonly(app(NovaRequest::class))) {
@@ -378,7 +379,7 @@ class Row extends Field implements JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize() :array
+    public function jsonSerialize(): array
     {
         return array_merge(parent::jsonSerialize(), [
             'sanitizedAttribute' => Str::plural(Str::kebab($this->attribute)),

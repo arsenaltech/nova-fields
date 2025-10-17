@@ -19,7 +19,7 @@ class FieldServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function boot()
+    public function boot(): void
     {
         Nova::serving(function (ServingNova $event) {
             Nova::script('nova-fields', __DIR__.'/../dist/js/field.js');
@@ -51,7 +51,7 @@ class FieldServiceProvider extends ServiceProvider
      *
      * @return void
      */
-    public function register()
+    public function register(): void
     {
         //
     }
@@ -61,7 +61,7 @@ class FieldServiceProvider extends ServiceProvider
      *
      * @return array
      */
-    protected function routeConfiguration()
+    protected function routeConfiguration(): array
     {
         return [
             'namespace' => 'R64\NovaFields\Http\Controllers',
