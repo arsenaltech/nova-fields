@@ -197,7 +197,8 @@ trait GetFiles
      */
     public function setRelativePath($folder)
     {
-        $defaultPath = $this->storage->getDriver()->getAdapter()->getPathPrefix();
+        // Get the root path from filesystem config (Flysystem v3 compatible)
+        $defaultPath = rtrim(config('filesystems.disks.' . $this->disk . '.root', ''), '/');
 
         $publicPath = str_replace($defaultPath, '', $folder);
 
@@ -465,7 +466,8 @@ trait GetFiles
      */
     public function getPaths($currentFolder)
     {
-        $defaultPath = $this->cleanSlashes($this->storage->getDriver()->getAdapter()->getPathPrefix());
+        // Get the root path from filesystem config (Flysystem v3 compatible)
+        $defaultPath = $this->cleanSlashes(rtrim(config('filesystems.disks.' . $this->disk . '.root', ''), '/'));
         $currentPath = $this->cleanSlashes($this->storage->path($currentFolder));
 
         $paths = $currentPath;
@@ -522,4 +524,3 @@ trait GetFiles
         return false;
     }
 }
-
