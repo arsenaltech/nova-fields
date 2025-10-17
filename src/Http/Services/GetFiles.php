@@ -28,15 +28,32 @@ trait GetFiles
      */
     public function getFiles($folder, $order, $filter = false)
     {
-        $filesData = $this->storage->listContents($folder);
+        // listContents() returns DirectoryListing, so convert to array
+        $listing = $this->storage->listContents($folder);
+        $filesData = [];
 
+        foreach ($listing as $item) {
+            $filesData[] = [
+                'type'       => $item->isDir() ? 'dir' : 'file',
+                'path'       => $item->path(),
+                'basename'   => basename($item->path()),
+                'timestamp'  => $item->lastModified() ?? null,
+                'size'       => method_exists($item, 'fileSize') ? $item->fileSize() : 0,
+                'extension'  => pathinfo($item->path(), PATHINFO_EXTENSION),
+            ];
+        }
+
+        // Continue with your logic
         $cacheTime = config('filemanager.cache', false);
         $cacheKey = md5($folder);
-        $fileData = cache()->remember($cacheKey, $cacheTime, function () use ($folder) {
-            $filesData = $this->storage->listContents($folder);
+
+        $fileData = cache()->remember($cacheKey, $cacheTime, function () use ($filesData) {
+            return $this->normalizeFiles($filesData);
         });
+
         $filesData = $this->normalizeFiles($filesData);
         $files = [];
+
         foreach ($filesData as $file) {
             $id = $this->generateId($file);
             if ($cacheTime) {
@@ -47,8 +64,11 @@ trait GetFiles
                 $fileData = $this->getFileData($file, $id);
             }
 
-            $files[] = $fileData;
+            if ($fileData) {
+                $files[] = $fileData;
+            }
         }
+
         $files = collect($files);
 
         if ($filter != false) {
@@ -195,17 +215,20 @@ trait GetFiles
      *
      * @param $folder
      */
-    public function setRelativePath($folder)
+   public function setRelativePath($folder)
     {
-        // Get the root path from filesystem config (Flysystem v3 compatible)
-        $defaultPath = rtrim(config('filesystems.disks.' . $this->disk . '.root', ''), '/');
+        // For local disks only (e.g. 'public')
+        $defaultPath = '';
+        if ($this->disk === 'public' || config("filesystems.disks.{$this->disk}.driver") === 'local') {
+            $defaultPath = $this->storage->path('');
+        }
 
         $publicPath = str_replace($defaultPath, '', $folder);
 
-        if ($folder != '/') {
-            $this->currentPath = $this->getAppend().'/'.$publicPath;
+        if ($folder !== '/') {
+            $this->currentPath = $this->getAppend() . '/' . $publicPath;
         } else {
-            $this->currentPath = $this->getAppend().$publicPath;
+            $this->currentPath = $this->getAppend() . $publicPath;
         }
     }
 
@@ -230,18 +253,23 @@ trait GetFiles
      */
     public function getFileType($file)
     {
-        if ($file['type'] == 'dir') {
+        if ($file['type'] === 'dir') {
             return 'dir';
         }
 
-        $mime = $this->storage->getMimetype($file['path']);
-        $extension = $file['extension'];
+        try {
+            $mime = $this->storage->mimeType($file['path']); // ✅ Laravel wrapper works here
+        } catch (\Throwable $e) {
+            $mime = 'application/octet-stream';
+        }
+
+        $extension = $file['extension'] ?? null;
 
         if (Str::contains($mime, 'directory')) {
             return 'dir';
         }
 
-        if (Str::contains($mime, 'image') || $extension == 'svg') {
+        if (Str::contains($mime, 'image') || $extension === 'svg') {
             return 'image';
         }
 
@@ -257,43 +285,11 @@ trait GetFiles
             return 'video';
         }
 
-        if (Str::contains($mime, 'zip')) {
+        if (Str::contains($mime, ['zip', 'rar', 'octet-stream'])) {
             return 'file';
         }
 
-        if (Str::contains($mime, 'rar')) {
-            return 'file';
-        }
-
-        if (Str::contains($mime, 'octet-stream')) {
-            return 'file';
-        }
-
-        if (Str::contains($mime, 'excel')) {
-            return 'text';
-        }
-
-        if (Str::contains($mime, 'word')) {
-            return 'text';
-        }
-
-        if (Str::contains($mime, 'css')) {
-            return 'text';
-        }
-
-        if (Str::contains($mime, 'javascript')) {
-            return 'text';
-        }
-
-        if (Str::contains($mime, 'plain')) {
-            return 'text';
-        }
-
-        if (Str::contains($mime, 'rtf')) {
-            return 'text';
-        }
-
-        if (Str::contains($mime, 'text')) {
+        if (Str::contains($mime, ['excel', 'word', 'css', 'javascript', 'plain', 'rtf', 'text'])) {
             return 'text';
         }
 
@@ -309,20 +305,25 @@ trait GetFiles
      */
     public function getThumb($file, $folder = false)
     {
-        if ($file['type'] == 'dir') {
+        if ($file['type'] === 'dir' || empty($file['path'])) {
             return false;
         }
 
-        $mime = $this->storage->getMimetype($file['path']);
-        $extension = $file['extension'];
+        try {
+            $mime = $this->storage->mimeType($file['path']);
+        } catch (\Exception $e) {
+            $mime = 'application/octet-stream';
+        }
+
+        $extension = $file['extension'] ?? null;
 
         if (Str::contains($mime, 'directory')) {
             return false;
         }
 
-        if (Str::contains($mime, 'image') || $extension == 'svg') {
+        if (Str::contains($mime, 'image') || $extension === 'svg') {
             if (method_exists($this->storage, 'put')) {
-                return $this->storage->url($file['path']);
+                return $this->storage->url($file['path']); // ✅ use full path
             }
 
             return $folder.'/'.$file['basename'];
@@ -442,6 +443,9 @@ trait GetFiles
                 $folderPath = '/';
             }
 
+            // Only call url() if folderPath is not root
+            $asset = ($folderPath === '/') ? '' : $this->cleanSlashes($this->storage->url($folderPath));
+
             return [
                 'id'                => 'folder_back',
                 'name'              => __('Go up'),
@@ -452,7 +456,7 @@ trait GetFiles
                 'size'              => 0,
                 'size_human'        => 0,
                 'thumb'             => '',
-                'asset'             => $this->cleanSlashes($this->storage->url($folderPath)),
+                'asset'             => $asset,
                 'can'               => true,
                 'loading'           => false,
                 'last_modification' => false,
@@ -466,10 +470,12 @@ trait GetFiles
      */
     public function getPaths($currentFolder)
     {
-        // Get the root path from filesystem config (Flysystem v3 compatible)
-        $defaultPath = $this->cleanSlashes(rtrim(config('filesystems.disks.' . $this->disk . '.root', ''), '/'));
-        $currentPath = $this->cleanSlashes($this->storage->path($currentFolder));
+        $defaultPath = '';
+        if ($this->disk === 'public' || config("filesystems.disks.{$this->disk}.driver") === 'local') {
+            $defaultPath = $this->cleanSlashes($this->storage->path(''));
+        }
 
+        $currentPath = $this->cleanSlashes($this->storage->path($currentFolder));
         $paths = $currentPath;
 
         if ($defaultPath != '/') {
@@ -477,7 +483,6 @@ trait GetFiles
         }
 
         $paths = collect(explode('/', $paths))->filter();
-
         $goodPaths = collect([]);
 
         foreach ($paths as $path) {
@@ -515,12 +520,33 @@ trait GetFiles
     {
         $filesData = $this->storage->listContents($path);
 
-        $key = array_search('.hide', array_column($filesData, 'basename'));
+        // Convert DirectoryListing to simple array
+        $filesArray = collect($filesData)->map(function ($item) {
+            return [
+                'basename' => basename($item->path()),
+                'type'     => $item->isDir() ? 'dir' : 'file',
+                'path'     => $item->path(),
+            ];
+        })->toArray();
 
-        if ($key === false) {
-            return true;
-        }
+        // Check if a file named ".hide" exists in this folder
+        $key = array_search('.hide', array_column($filesArray, 'basename'));
 
-        return false;
+        return $key === false; // false => has .hide file, true => should show
+    }
+
+    private function listContentsAsArray($folder)
+    {
+        return collect($this->storage->listContents($folder))->map(function ($item) {
+            return [
+                'type'      => $item->isDir() ? 'dir' : 'file',
+                'path'      => $item->path(),
+                'basename'  => basename($item->path()),
+                'timestamp' => $item->lastModified() ?? null,
+                'size'      => method_exists($item, 'fileSize') ? $item->fileSize() : 0,
+                'extension' => pathinfo($item->path(), PATHINFO_EXTENSION),
+            ];
+        })->toArray();
     }
 }
+
