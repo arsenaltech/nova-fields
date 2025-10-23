@@ -31,13 +31,9 @@ trait GetFiles
         $cacheTime = config('filemanager.cache', false);
         $cacheKey = 'filemanager_' . md5($this->disk . '_' . $folder);
 
-        if ($cacheTime) {
-            $filesData = cache()->remember($cacheKey, $cacheTime, function () use ($folder) {
-                return $this->listContentsAsArray($folder);
-            });
-        } else {
-            $filesData = $this->listContentsAsArray($folder);
-        }
+        $filesData = cache()->remember($cacheKey, $cacheTime, function () use ($folder) {
+            return $this->listContentsAsArray($folder);
+        });
 
         $files = [];
 
