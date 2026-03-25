@@ -125,12 +125,16 @@ trait GetFiles
 
             // Build URL without calling storage API
             if (in_array($this->disk, $this->cloudDisks)) {
-                // For cloud storage, construct URL directly
-                return $this->storage->url($file['path']);
+                // For cloud storage, construct URL directly to avoid redundant API calls
+                static $cloudUrlPrefix = null;
+                if ($cloudUrlPrefix === null) {
+                    $cloudUrlPrefix = rtrim($this->storage->url(''), '/');
+                }
+                return $cloudUrlPrefix . '/' . ltrim($file['path'] ?? '', '/');
             }
 
             // For local storage
-            return $this->cleanSlashes($this->getAppend() . '/' . $file['path']);
+            return $this->cleanSlashes($this->getAppend() . '/' . ($file['path'] ?? ''));
         } catch (\Exception $e) {
             return '';
         }
@@ -152,9 +156,16 @@ trait GetFiles
         // If it's an image, return the URL directly
         if ($mimeType === 'image') {
             try {
+                static $cloudUrlPrefixThumb = null;
+                if (in_array($this->disk, $this->cloudDisks)) {
+                    if ($cloudUrlPrefixThumb === null) {
+                        $cloudUrlPrefixThumb = rtrim($this->storage->url(''), '/');
+                    }
+                    return $cloudUrlPrefixThumb . '/' . ltrim($file['path'] ?? '', '/');
+                }
                 return $this->storage->url($file['path']);
             } catch (\Exception $e) {
-                return $this->currentPath . '/' . $file['basename'];
+                return $this->currentPath . '/' . ($file['basename'] ?? '');
             }
         }
 
@@ -530,6 +541,10 @@ trait GetFiles
      */
     private function checkShouldHideFolder($path)
     {
+        if (in_array($this->disk, $this->cloudDisks)) {
+            return true;
+        }
+
         $cacheTime = config('filemanager.cache', false);
         $cacheKey = 'folder_hide_' . md5($this->disk . '_' . $path);
 
@@ -578,13 +593,14 @@ trait GetFiles
                 }
 
                 $extension = pathinfo($path, PATHINFO_EXTENSION);
+                $isDir = $item->isDir();
 
                 $results[] = [
-                    'type'      => $item->isDir() ? 'dir' : 'file',
+                    'type'      => $isDir ? 'dir' : 'file',
                     'path'      => $path,
                     'basename'  => $basename,
-                    'timestamp' => method_exists($item, 'lastModified') ? $item->lastModified() : null,
-                    'size'      => method_exists($item, 'fileSize') ? $item->fileSize() : 0,
+                    'timestamp' => (!$isDir && method_exists($item, 'lastModified')) ? $item->lastModified() : null,
+                    'size'      => (!$isDir && method_exists($item, 'fileSize')) ? $item->fileSize() : 0,
                     'extension' => $extension ?: null,
                 ];
             }

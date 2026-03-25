@@ -11,7 +11,7 @@ class ComputedValues
         return $this->values = (object) $values;
     }
 
-    public function __get($key): bool
+    public function __get($key): mixed
     {
         return property_exists($this->values, $key) ? $this->values->$key : null;
     }
