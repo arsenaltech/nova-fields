@@ -111,29 +111,36 @@ trait GetFiles
     }
 
     /**
+     * Get the base URL prefix for cloud storage (cached, minimal API calls).
+     *
+     * @return string
+     */
+    protected function getCloudUrlPrefix(): string
+    {
+        static $cloudUrlPrefix = null;
+        if ($cloudUrlPrefix === null) {
+            $cloudUrlPrefix = Str::beforeLast($this->storage->url('____dummy____'), '/____dummy____');
+        }
+        return $cloudUrlPrefix;
+    }
+
+    /**
      * Get asset URL safely (minimal API calls).
      *
      * @param array $file
      * @return string
      */
-    protected function getAssetUrl($file)
+    protected function getAssetUrl(array $file): string
     {
         try {
-            if ($file['type'] === 'dir') {
+            if ($file['type'] === 'dir' || empty($file['path'])) {
                 return '';
             }
 
-            // Build URL without calling storage API
             if (in_array($this->disk, $this->cloudDisks)) {
-                // For cloud storage, construct URL directly to avoid redundant API calls
-                static $cloudUrlPrefix = null;
-                if ($cloudUrlPrefix === null) {
-                    $cloudUrlPrefix = rtrim($this->storage->url(''), '/');
-                }
-                return $cloudUrlPrefix . '/' . ltrim($file['path'] ?? '', '/');
+                return $this->getCloudUrlPrefix() . '/' . ltrim($file['path'], '/');
             }
 
-            // For local storage
             return $this->cleanSlashes($this->getAppend() . '/' . ($file['path'] ?? ''));
         } catch (\Exception $e) {
             return '';
@@ -147,7 +154,7 @@ trait GetFiles
      * @param string $mimeType
      * @return string|false
      */
-    protected function getThumbUrl($file, $mimeType)
+    protected function getThumbUrl(array $file, string $mimeType): string|false
     {
         if ($file['type'] === 'dir' || empty($file['path'])) {
             return false;
@@ -156,12 +163,8 @@ trait GetFiles
         // If it's an image, return the URL directly
         if ($mimeType === 'image') {
             try {
-                static $cloudUrlPrefixThumb = null;
                 if (in_array($this->disk, $this->cloudDisks)) {
-                    if ($cloudUrlPrefixThumb === null) {
-                        $cloudUrlPrefixThumb = rtrim($this->storage->url(''), '/');
-                    }
-                    return $cloudUrlPrefixThumb . '/' . ltrim($file['path'] ?? '', '/');
+                    return $this->getCloudUrlPrefix() . '/' . ltrim($file['path'], '/');
                 }
                 return $this->storage->url($file['path']);
             } catch (\Exception $e) {
