@@ -32,7 +32,7 @@
               d="M20 6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h7.41l2 2H20zM4 6v12h16V8h-7.41l-2-2H4z" />
           </svg>
 
-          <div class="actions-grid absolute !px-1.5 !py-1.5 dark:bg-gray-700" :class="{ 'hidden': !multiSelecting }">
+          <div class="actions-grid absolute dark:bg-gray-700" :class="{ 'hidden': !multiSelecting }">
             <div v-if="multiSelecting">
               <input :checked="selected" type="checkbox">
             </div>
@@ -81,7 +81,7 @@
                 </div>
               </template>
 
-              <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <svg class="w-full h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path
                   d="M20 6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h7.41l2 2H20zM4 6v12h16V8h-7.41l-2-2H4z"
                   fill="#B3C1D1" />
@@ -108,7 +108,7 @@
                 </div>
               </template>
 
-              <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <svg class="w-full h-8" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path fill="#B3C1D1"
                   d="M20 6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h7.41l2 2H20zM4 6v12h16V8h-7.41l-2-2H4z" />
               </svg>
@@ -275,9 +275,10 @@ export default {
   right: 0;
   position: absolute;
   top: 0;
-  padding-left: 0.5rem;
-  padding-right: 0.5rem;
-  padding-top: 0.5rem;
-  padding-bottom: 0.25rem;
+  // padding-left: 0.5rem;
+  // padding-right: 0.5rem;
+  // padding-top: 0.5rem;
+  // padding-bottom: 0.25rem;
+  padding: 0.375rem;
   border-bottom-left-radius: 0.5rem;
 }</style>

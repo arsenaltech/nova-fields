@@ -17289,7 +17289,7 @@ var _hoisted_17 = {
 };
 var _hoisted_18 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("svg", {
-    "class": "w-6 h-6",
+    "class": "w-full h-8",
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 24 24"
   }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
@@ -17326,7 +17326,7 @@ var _hoisted_26 = {
 };
 var _hoisted_27 = /*#__PURE__*/_withScopeId(function () {
   return /*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("svg", {
-    "class": "w-6 h-6",
+    "class": "w-full h-8",
     xmlns: "http://www.w3.org/2000/svg",
     viewBox: "0 0 24 24"
   }, [/*#__PURE__*/(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("path", {
@@ -17429,7 +17429,7 @@ function render(_ctx, _cache, $props, $setup, $data, $options) {
       }, [_hoisted_3, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", _hoisted_4, (0,vue__WEBPACK_IMPORTED_MODULE_0__.toDisplayString)(_ctx.__('Go up')), 1 /* TEXT */)], 64 /* STABLE_FRAGMENT */)) : ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)(vue__WEBPACK_IMPORTED_MODULE_0__.Fragment, {
         key: 2
       }, [_hoisted_5, (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("div", {
-        "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["actions-grid absolute !px-1.5 !py-1.5 dark:bg-gray-700", {
+        "class": (0,vue__WEBPACK_IMPORTED_MODULE_0__.normalizeClass)(["actions-grid absolute dark:bg-gray-700", {
           'hidden': !$props.multiSelecting
         }])
       }, [$props.multiSelecting ? ((0,vue__WEBPACK_IMPORTED_MODULE_0__.openBlock)(), (0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementBlock)("div", _hoisted_6, [(0,vue__WEBPACK_IMPORTED_MODULE_0__.createElementVNode)("input", {
@@ -48695,7 +48695,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, ".card[data-v-4c9b71d8] {\n  padding: 0 !important;\n}\n.card:hover > svg[data-v-4c9b71d8] {\n  opacity: 0.5;\n}\n.card:hover > .actions-grid[data-v-4c9b71d8] {\n  display: flex;\n}\n.actions-grid[data-v-4c9b71d8] {\n  display: flex;\n  right: 0;\n  position: absolute;\n  top: 0;\n  padding-left: 0.5rem;\n  padding-right: 0.5rem;\n  padding-top: 0.5rem;\n  padding-bottom: 0.25rem;\n  border-bottom-left-radius: 0.5rem;\n}", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, ".card[data-v-4c9b71d8] {\n  padding: 0 !important;\n}\n.card:hover > svg[data-v-4c9b71d8] {\n  opacity: 0.5;\n}\n.card:hover > .actions-grid[data-v-4c9b71d8] {\n  display: flex;\n}\n.actions-grid[data-v-4c9b71d8] {\n  display: flex;\n  right: 0;\n  position: absolute;\n  top: 0;\n  padding: 0.375rem;\n  border-bottom-left-radius: 0.5rem;\n}", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
