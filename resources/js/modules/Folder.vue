@@ -11,7 +11,7 @@
         </template>
 
         <template v-if="file.id == 'folder_back'">
-          <svg class="w-2/3 h-5/6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <svg class="w-full h-5/6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path
               d="M20 6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h7.41l2 2H20zM4 6v12h16V8h-7.41l-2-2H4z"
               fill="#B3C1D1" />
@@ -27,7 +27,7 @@
 
         <template v-else>
 
-          <svg class="w-2/3 h-5/6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+          <svg class="w-full h-5/6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
             <path fill="#B3C1D1"
               d="M20 6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h7.41l2 2H20zM4 6v12h16V8h-7.41l-2-2H4z" />
           </svg>
@@ -81,7 +81,7 @@
                 </div>
               </template>
 
-              <svg class="w-24 h-24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path
                   d="M20 6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h7.41l2 2H20zM4 6v12h16V8h-7.41l-2-2H4z"
                   fill="#B3C1D1" />
@@ -108,7 +108,7 @@
                 </div>
               </template>
 
-              <svg class="w-24 h-24" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+              <svg class="w-6 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
                 <path fill="#B3C1D1"
                   d="M20 6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h7.41l2 2H20zM4 6v12h16V8h-7.41l-2-2H4z" />
               </svg>
