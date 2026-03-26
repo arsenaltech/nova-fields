@@ -32,12 +32,12 @@
               d="M20 6a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6c0-1.1.9-2 2-2h7.41l2 2H20zM4 6v12h16V8h-7.41l-2-2H4z" />
           </svg>
 
-          <div class="actions-grid absolute pr-2 pt-2 dark:bg-gray-700" :class="{ 'hidden': !multiSelecting }">
+          <div class="actions-grid absolute !px-1.5 !py-1.5 dark:bg-gray-700" :class="{ 'hidden': !multiSelecting }">
             <div v-if="multiSelecting">
               <input :checked="selected" type="checkbox">
             </div>
             <div v-else class="flex flex-wrap text-70">
-              <div class="cursor-pointer  mr-2" v-if="deletePermission" @click.prevent="deleteFolder($event)">
+              <div class="cursor-pointer mr-2 hover:text-red-500" v-if="deletePermission" @click.prevent="deleteFolder($event)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"
                   aria-labelledby="delete" class="fill-current">
                   <path fill-rule="nonzero"
@@ -45,7 +45,7 @@
                   </path>
                 </svg>
               </div>
-              <div class="cursor-pointer" v-if="renamePermission" @click.prevent="editFolder($event)">
+              <div class="cursor-pointer hover:text-primary-500" v-if="renamePermission" @click.prevent="editFolder($event)">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20" aria-labelledby="edit"
                   class="fill-current">
                   <path
