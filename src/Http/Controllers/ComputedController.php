@@ -13,7 +13,7 @@ class ComputedController
      * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
      * @return mixed
      */
-    public function index(NovaRequest $request)
+    public function index(NovaRequest $request): mixed
     {
         $resourceId = $request->input('resourceId');
         $resourceClass = Nova::resourceForKey($request->resource);
@@ -37,7 +37,7 @@ class ComputedController
         $cb = $request->input('computeOptions') ? $field->computeOptionsCallback : $field->computeCallback;
 
         if (!is_callable($cb)) {
-            return;
+            return '';
         }
 
         $value = call_user_func($cb, new ComputedValues($request->input('values')));

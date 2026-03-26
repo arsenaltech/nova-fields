@@ -52,20 +52,20 @@ class JSON extends Field implements JsonSerializable
     /**
      * The child fields.
      *
-     * @var array
+     * @var \Illuminate\Support\Collection
      */
-    public $fields = [];
+    public $fields;
 
     /**
      * Create a new JSON field.
      *
      * @param  string  $name
-     * @param  string  $fields
+     * @param  iterable  $fields
      * @param  string|null  $attribute
      * @param  mixed|null  $resolveCallback
      * @return void
      */
-    public function __construct($name, $fields, $attribute = null, $resolveCallback = null)
+    public function __construct($name, $fields = [], $attribute = null, $resolveCallback = null)
     {
         parent::__construct($name, $attribute, $resolveCallback);
 
@@ -88,7 +88,7 @@ class JSON extends Field implements JsonSerializable
      * @param  string  $classes
      * @return $this
      */
-    public function panelTitleClasses($classes)
+    public function panelTitleClasses($classes): JSON
     {
         $this->panelTitleClasses = $classes;
 
@@ -102,7 +102,7 @@ class JSON extends Field implements JsonSerializable
      *
      * @return $this
      */
-    public function flatten($value = true)
+    public function flatten($value = true): JSON
     {
         return $this->withMeta([
             'flatten' => $value
@@ -116,7 +116,7 @@ class JSON extends Field implements JsonSerializable
      * @param  string|null  $attribute
      * @return void
      */
-    public function resolve($resource, $attribute = null)
+    public function resolve($resource, $attribute = null): void
     {
         $attribute = $attribute ?? $this->attribute;
 
@@ -152,7 +152,7 @@ class JSON extends Field implements JsonSerializable
      * @param  string  $attribute
      * @return void
      */
-    protected function fillAttributeFromRequest(NovaRequest $request, $requestAttribute, $model, $attribute)
+    protected function fillAttributeFromRequest(NovaRequest $request, $requestAttribute, $model, $attribute): void
     {
         $this->fields->each(function ($field) use ($request, $model, $attribute) {
             $field->fillInto($request, $model, $attribute . '->' . $field->attribute, $attribute . '.' . $field->attribute);
@@ -165,7 +165,7 @@ class JSON extends Field implements JsonSerializable
      * @param  array  $rules
      * @return array
      */
-    protected function generateRules($rules)
+    protected function generateRules($rules): array
     {
         return collect($rules)->mapWithKeys(function ($rules, $key) {
             return [$this->attribute . ($key ? '.' . $key : '') => $rules];
@@ -179,7 +179,7 @@ class JSON extends Field implements JsonSerializable
      * @param  string|null  $attribute
      * @return void
      */
-    public function resolveForDisplay($resource, $attribute = null)
+    public function resolveForDisplay($resource, $attribute = null): void
     {
         $attribute = $attribute ?? $this->attribute;
 
@@ -197,7 +197,7 @@ class JSON extends Field implements JsonSerializable
      *
      * @return array
      */
-    public function jsonSerialize() :array
+    public function jsonSerialize(): array
     {
         return array_merge(parent::jsonSerialize(), [
             'panelTitleClasses' => $this->panelTitleClasses,

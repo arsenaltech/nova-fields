@@ -44,12 +44,16 @@ class File extends NovaFile
         parent::__construct($name, $attribute, $disk, $storageCallback);
 
         $this->download(function ($request, $model) {
+
+            /** @var \Illuminate\Filesystem\FilesystemAdapter $disk */
+            $disk = Storage::disk($this->disk);
+
             if (is_object($model)) {
                 $name = $this->originalNameColumn ? $model->{$this->originalNameColumn} : null;
-                return Storage::disk($this->disk)->download($this->value, $name);
+                return $disk->download($this->value, $name);
             }
 
-            return Storage::disk($this->disk)->download($model);
+            return $disk->download($model);
         });
     }
 
@@ -58,7 +62,7 @@ class File extends NovaFile
      *
      * @return $this
      */
-    public function draggable()
+    public function draggable(): File
     {
         return $this->withMeta(['draggable' => true]);
     }
@@ -68,7 +72,7 @@ class File extends NovaFile
      *
      * @return $this
      */
-    public function previewBeforeUpload()
+    public function previewBeforeUpload(): File
     {
         return $this->withMeta(['previewBeforeUpload' => true]);
     }
@@ -78,7 +82,7 @@ class File extends NovaFile
      *
      * @return array
      */
-    public function meta()
+    public function meta(): array
     {
         return array_merge([
             'wrapperClasses' => $this->wrapperClasses,

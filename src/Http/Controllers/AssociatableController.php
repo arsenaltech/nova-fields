@@ -11,9 +11,9 @@ class AssociatableController extends Controller
      * List the available related resources for a given resource.
      *
      * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
-     * @return \Illuminate\Http\Response
+     * @return array
      */
-    public function index(NovaRequest $request)
+    public function index(NovaRequest $request): array
     {
         $fields = $request->newResource()
                         ->availableFields($request);
@@ -22,8 +22,18 @@ class AssociatableController extends Controller
 
         if(!$field) {
             $rowField = $fields->firstWhere('component', 'nova-fields-row');
-            $fields = collect($rowField->meta['fields']);
-            $field = $fields->firstWhere('attribute', $request->field);
+            if ($rowField && isset($rowField->meta['fields'])) {
+                $fields = collect($rowField->meta['fields']);
+                $field = $fields->firstWhere('attribute', $request->field);
+            }
+        }
+
+        if (!$field || !isset($field->resourceClass)) {
+            return [
+                'resources' => [],
+                'softDeletes' => false,
+                'withTrashed' => false,
+            ];
         }
 
         $withTrashed = $this->shouldIncludeTrashed(

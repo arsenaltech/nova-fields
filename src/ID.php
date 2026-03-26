@@ -159,7 +159,7 @@ class ID extends NovaID implements JsonSerializable
      * @return array
      */
     #[\ReturnTypeWillChange]
-    public function jsonSerialize() :array
+    public function jsonSerialize(): array
     {
         return array_merge(parent::jsonSerialize(), array_filter([
             'pivotValue' => $this->pivotValue ?? null,

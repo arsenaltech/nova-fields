@@ -38,7 +38,7 @@ class Slug extends NovaSlug implements JsonSerializable
         return $this;
     }
 
-    public function jsonSerialize() :array
+    public function jsonSerialize(): array
     {
         return array_merge(parent::jsonSerialize(),[
             'showCustomize' => $this->showCustomize,

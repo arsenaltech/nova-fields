@@ -8,10 +8,10 @@ class ComputedValues
 
     public function __construct($values)
     {
-        return $this->values = (object) $values;
+        $this->values = (object) $values;
     }
 
-    public function __get($key)
+    public function __get($key): mixed
     {
         return property_exists($this->values, $key) ? $this->values->$key : null;
     }
