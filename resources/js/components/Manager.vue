@@ -799,13 +799,14 @@ export default {
       if (this.search) {
         filtered = this.files.filter(m => m.name?.toLowerCase().includes(this.search.toLowerCase()));
       }
-      if (this.filters.length > 0) {
+      if (Array.isArray(this.filters) && this.filters.length > 0) {
+        const allowedExtensions = this.filters.map(ext => String(ext).toLowerCase().replace(/^\./, ''));
         filtered = _.filter(filtered, file => {
-          if (file.type == 'dir') {
+          if (file.type === 'dir') {
             return true;
           }
-          const ext = typeof file.ext === 'string' ? file.ext.toLowerCase() : '';
-          return this.filters.includes(ext);
+          const ext = typeof file.ext === 'string' ? file.ext.toLowerCase().replace(/^\./, '') : '';
+          return allowedExtensions.includes(ext);
         });
       }
       return filtered;

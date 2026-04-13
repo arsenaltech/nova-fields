@@ -233,7 +233,7 @@ export default {
     firstTime: true,
     search: '',
     filters: [],
-    filterBy: '',
+    filterBy: this.filter || '',
     showFilters: false,
     selectedFiles: [], // { type: 'folder/file', path: '...'' }
     buttons: [],
@@ -420,6 +420,10 @@ export default {
 
     currentPathFolder(val) {
       this.$emit('update-current-path', val);
+    },
+
+    filter(val) {
+      this.filterBy = val || '';
     },
 
     filters() {
