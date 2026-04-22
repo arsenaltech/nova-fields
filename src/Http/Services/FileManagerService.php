@@ -158,10 +158,37 @@ class FileManagerService
         }
 
         if ($this->storage->makeDirectory($path)) {
+            // Invalidate the cached listing for the parent folder so the new folder appears immediately
+            $this->forgetFolderCache($currentFolder);
             return response()->json(true);
         } else {
             return response()->json(false);
         }
+    }
+
+    /**
+     * Invalidate the filemanager listing cache for a given folder.
+     * Only acts when caching is enabled (filemanager.cache is not false).
+     *
+     * @param string $folder
+     */
+    private function forgetFolderCache($folder)
+    {
+        if (config('filemanager.cache', false) !== false) {
+            $cacheKey = 'filemanager_' . md5($this->disk . '_' . $folder);
+            Cache::forget($cacheKey);
+        }
+    }
+
+    /**
+     * Normalize a dirname() result: maps '.' (returned for root-level paths) to '/'.
+     *
+     * @param string $dir
+     * @return string
+     */
+    private function normalizeDirname($dir): string
+    {
+        return ($dir === '.' || $dir === '') ? '/' : $dir;
     }
 
     /**
@@ -175,6 +202,8 @@ class FileManagerService
     {
         if ($this->storage->deleteDirectory($path)) {
             event(new FolderRemoved($this->storage, $path));
+            // Invalidate cache for the parent folder (the deleted folder disappears from it)
+            $this->forgetFolderCache($this->normalizeDirname(dirname($path)));
 
             return response()->json(['success' => true, 'data' => []]);
         } else {
@@ -207,6 +236,9 @@ class FileManagerService
                 $this->checkJobs($this->storage, $currentFolder.$fileName);
                 event(new FileUploaded($this->storage, $currentFolder.$fileName));
             }
+
+            // Invalidate cache for the folder the file was uploaded into
+            $this->forgetFolderCache($currentFolder ?: '/');
 
             return response()->json(['success' => true, 'name' => $fileName]);
         } else {
@@ -282,6 +314,8 @@ class FileManagerService
     {
         if ($this->storage->delete($file)) {
             event(new FileRemoved($this->storage, $file));
+            // Invalidate cache for the containing folder
+            $this->forgetFolderCache($this->normalizeDirname(dirname($file)));
 
             return response()->json(['success' => true, 'data' => []]);
         } else {
@@ -303,6 +337,8 @@ class FileManagerService
                 $oldFileName = array_pop($splitOld);
                 $oldPath = implode("/",$splitOld);
                 Artisan::call("rename:catalog-path", ['old_path' => $oldPath,'new_path'=> $path,'files' => [$newName],'renameType' => 'file_name','old_file_name' => [$oldFileName]]);
+                // Invalidate cache for the containing folder (file name changed)
+                $this->forgetFolderCache($this->normalizeDirname(rtrim($path, '/')));
                 $info = new NormalizeFile($this->storage, $fullPath, $path.$newName);
 
                 return response()->json(['success' => true, 'data' => $info->toArray()]);
@@ -358,6 +394,9 @@ class FileManagerService
                 $this->storage->deleteDirectory($dir);
             }
 
+            // Invalidate cache for the parent folder (old name gone, new name appears)
+            $this->forgetFolderCache($this->normalizeDirname(rtrim($path, '/')));
+
             $fullPath = $this->storage->path($newDir);
 
             $info = new NormalizeFile($this->storage, $fullPath, $newDir);
@@ -386,10 +425,9 @@ class FileManagerService
             $fileName = array_pop($splitNew);
             $new = implode("/",$splitNew);
             $fullPath = $this->storage->path($newPath);
-            $oldCacheKey = md5($oldPath);
-            $newCacheKey = md5($new);
-            Cache::forget($oldCacheKey);
-            Cache::forget($newCacheKey);
+            // Invalidate both source and destination folder caches
+            $this->forgetFolderCache($old ?: '/');
+            $this->forgetFolderCache($new ?: '/');
             Artisan::call("rename:catalog-path", ['old_path' => $old,'new_path'=> $new,'files' => [$fileName]]);
             return response()->json(['success' => true]);
         }
@@ -449,6 +487,11 @@ class FileManagerService
             $this->storage->deleteDirectory($dir);
         }
 
+        // Invalidate cache for old parent and new destination folder
+        $oldParent = implode('/', $splitOldPath) ?: '/';
+        $this->forgetFolderCache($oldParent);
+        $this->forgetFolderCache($newPath ?: '/');
+
         $fullPath = $this->storage->path($newDir);
         $info = new NormalizeFile($this->storage, $fullPath, $newDir);
 
@@ -470,6 +513,9 @@ class FileManagerService
     {
         event(new FolderUploaded($this->storage, $path));
 
+        // Invalidate cache for the parent folder so the newly uploaded folder appears
+        $this->forgetFolderCache($this->normalizeDirname(dirname($path)));
+
         return response()->json(['success' => true]);
     }
 
@@ -478,13 +524,27 @@ class FileManagerService
      */
     private function folderExists($folder)
     {
-        $directories = $this->storage->directories(dirname($folder));
+        // Root always exists
+        if (!$folder || $folder === '/' || $folder === '') {
+            return true;
+        }
 
-        $directories = collect($directories)->map(function ($folder) {
-            return basename($folder);
-        });
+        // Use storage->exists() for a direct HEAD check (works reliably on S3 for
+        // newly created empty folders without doing a full directory listing).
+        // S3 folders are zero-byte objects with a trailing slash.
+        $normalized = rtrim($folder, '/') . '/';
+        if ($this->storage->exists($normalized)) {
+            return true;
+        }
 
-        return in_array(basename($folder), $directories->toArray());
+        // Fallback: check via directories() for disks that don't use trailing-slash markers
+        try {
+            $directories = $this->storage->directories(dirname($folder));
+            $directories = collect($directories)->map(fn ($d) => basename($d));
+            return in_array(basename($folder), $directories->toArray());
+        } catch (\Exception $e) {
+            return true; // On error, allow the folder — getFiles() will return empty if it truly doesn't exist
+        }
     }
 
     /**

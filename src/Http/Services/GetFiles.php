@@ -29,11 +29,15 @@ trait GetFiles
     public function getFiles($folder, $order, $filter = false)
     {
         $cacheTime = config('filemanager.cache', false);
-        $cacheKey = 'filemanager_' . md5($this->disk . '_' . $folder);
 
-        $filesData = cache()->remember($cacheKey, $cacheTime, function () use ($folder) {
-            return $this->listContentsAsArray($folder);
-        });
+        if ($cacheTime !== false) {
+            $cacheKey = 'filemanager_' . md5($this->disk . '_' . $folder);
+            $filesData = cache()->remember($cacheKey, $cacheTime, function () use ($folder) {
+                return $this->listContentsAsArray($folder);
+            });
+        } else {
+            $filesData = $this->listContentsAsArray($folder);
+        }
 
         $files = [];
 
@@ -549,9 +553,8 @@ trait GetFiles
         }
 
         $cacheTime = config('filemanager.cache', false);
-        $cacheKey = 'folder_hide_' . md5($this->disk . '_' . $path);
 
-        return cache()->remember($cacheKey, $cacheTime, function () use ($path) {
+        $check = function () use ($path) {
             try {
                 $filesData = $this->storage->listContents($path, false);
 
@@ -565,7 +568,14 @@ trait GetFiles
             } catch (\Exception $e) {
                 return true; // On error, show the folder
             }
-        });
+        };
+
+        if ($cacheTime !== false) {
+            $cacheKey = 'folder_hide_' . md5($this->disk . '_' . $path);
+            return cache()->remember($cacheKey, $cacheTime, $check);
+        }
+
+        return $check();
     }
 
     /**
