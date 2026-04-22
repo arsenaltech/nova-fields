@@ -175,6 +175,7 @@ class FileManagerService
     private function forgetFolderCache($folder)
     {
         if (config('filemanager.cache', false) !== false) {
+            $folder = $this->normalizePath($folder);
             $cacheKey = 'filemanager_' . md5($this->disk . '_' . $folder);
             Cache::forget($cacheKey);
         }
@@ -232,13 +233,21 @@ class FileManagerService
         if ($this->storage->putFileAs($currentFolder, $file, $fileName)) {
             $this->setVisibility($currentFolder, $fileName, $visibility);
 
+            $normalizedFolder = $this->normalizePath($currentFolder);
+            $fullPath = $normalizedFolder ? $normalizedFolder . '/' . $fileName : $fileName;
+
             if (! $uploadingFolder) {
-                $this->checkJobs($this->storage, $currentFolder.$fileName);
-                event(new FileUploaded($this->storage, $currentFolder.$fileName));
+                try {
+                    $this->checkJobs($this->storage, $fullPath);
+                    event(new FileUploaded($this->storage, $fullPath));
+                } catch (\Exception $e) {
+                    // Log error but continue to clear cache since file was uploaded
+                    \Log::error("Post-upload tasks failed for {$fullPath}: " . $e->getMessage());
+                }
             }
 
             // Invalidate cache for the folder the file was uploaded into
-            $this->forgetFolderCache($currentFolder ?: '/');
+            $this->forgetFolderCache($normalizedFolder);
 
             return response()->json(['success' => true, 'name' => $fileName]);
         } else {

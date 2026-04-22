@@ -28,6 +28,7 @@ trait GetFiles
      */
     public function getFiles($folder, $order, $filter = false)
     {
+        $folder = $this->normalizePath($folder);
         $cacheTime = config('filemanager.cache', false);
 
         if ($cacheTime !== false) {

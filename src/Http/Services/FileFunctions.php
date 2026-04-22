@@ -45,6 +45,21 @@ trait FileFunctions
     }
 
     /**
+     * Normalize path for cache keys and storage calls.
+     *
+     * @param string $path
+     * @return string
+     */
+    public function normalizePath($path)
+    {
+        if (!$path || $path === '/' || $path === '.') {
+            return '';
+        }
+
+        return trim($this->cleanSlashes($path), '/');
+    }
+
+    /**
      * Cleanup filename.
      *
      * @param  string  $str
