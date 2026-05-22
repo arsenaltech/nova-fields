@@ -34,8 +34,8 @@
               {{ __('Rename file') }}
             </heading>
 
-            <div class="flex flex-wrap items-stretch w-full mb-4 relative">
-              <input type="text" class="flex-shrink flex-grow flex-auto h-full form-control form-input form-input-bordered-left py-3" :placeholder="nameWithoutExtension" v-model="nameWithoutExtension" autofocus required v-on:keyup.enter="renamePath">
+            <div class="flex items-stretch w-full mb-4 relative">
+              <input type="text" class="flex-1 form-control form-input form-input-bordered-left py-3 h-full" :placeholder="nameWithoutExtension" v-model="nameWithoutExtension" autofocus required v-on:keyup.enter="renamePath">
               <div class="flex -mr-px">
                 <span class="flex items-center leading-normal bg-50 rounded rounded-l-none form-input-bordered-right px-3 whitespace-no-wrap text-grey-dark text-sm dark:bg-gray-800">{{ extension }}</span>
               </div>
