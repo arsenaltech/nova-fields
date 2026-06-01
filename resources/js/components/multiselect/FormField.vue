@@ -335,39 +335,48 @@ export default {
     },
 
     fetchOptions: debounce(async function (search) {
-      if (this.cancelTokenSource) {
-        this.cancelTokenSource.cancel("Request canceled due to new input.");
-      }
-      this.cancelTokenSource = axios.CancelToken.source();
-      const { data } = await Nova.request().get(`${this.field.apiUrl}`, { params: { search }, cancelToken: this.cancelTokenSource.token,});
+      try {
+        if (this.cancelTokenSource) {
+          this.cancelTokenSource.cancel("Request canceled due to new input.");
+        }
+        this.cancelTokenSource = axios.CancelToken.source();
+        const { data } = await axios.get(`${this.field.apiUrl}`, { params: { search }, cancelToken: this.cancelTokenSource.token,});
 
-      // Response is not an array or an object
-      if (typeof data !== 'object') throw new Error('Server response was invalid.');
+        // Response is not an array or an object
+        if (typeof data !== 'object') throw new Error('Server response was invalid.');
 
-      // Is array
-      if (Array.isArray(data)) {
-        this.asyncOptions = data;
-        this.isLoading = false;
-        return;
-      }
-
-      // Nova resource response
-      if (data.resources) {
-        const newOptions = [];
-
-        for (const resource of data.resources) {
-          const label = resource.display || resource.title || '-';
-          const value = resource.value || resource.id.value || null;
-          newOptions.push({ value, label });
+        // Is array
+        if (Array.isArray(data)) {
+          this.asyncOptions = data;
+          this.isLoading = false;
+          return;
         }
 
-        this.asyncOptions = newOptions;
-        this.isLoading = false;
-        return;
-      }
+        // Nova resource response
+        if (data.resources) {
+          const newOptions = [];
 
-      this.asyncOptions = Object.entries(data).map(entry => ({ label: entry[1], value: entry[0] }));
-      this.isLoading = false;
+          for (const resource of data.resources) {
+            const label = resource.display || resource.title || '-';
+            const value = resource.value || resource.id.value || null;
+            newOptions.push({ value, label });
+          }
+
+          this.asyncOptions = newOptions;
+          this.isLoading = false;
+          return;
+        }
+
+        this.asyncOptions = Object.entries(data).map(entry => ({ label: entry[1], value: entry[0] }));
+        this.isLoading = false;
+      } catch (error) {
+        if (axios.isCancel(error)) {
+          console.log("Request canceled:", error.message);
+        } else {
+          console.error("Error performing search:", error);
+          this.isLoading = false;
+        }
+      }
     }, 500),
 
     tryToFetchOptions(query) {
