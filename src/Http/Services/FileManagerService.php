@@ -232,8 +232,26 @@ class FileManagerService
             $targetPath = $normalizedFolder ? $normalizedFolder . '/' . $fileName : $fileName;
             
             try {
-                if ($this->storage->copy($tempKey, $targetPath)) {
-                    Storage::disk('s3')->delete($tempKey);
+                $vaporDisk = Storage::build([
+                    'driver' => 's3',
+                    'key' => env('AWS_ACCESS_KEY_ID') ?: env('AWS_FILE_MANAGER_ACCESS_KEY_ID'),
+                    'secret' => env('AWS_SECRET_ACCESS_KEY') ?: env('AWS_FILE_MANAGER_SECRET_ACCESS_KEY'),
+                    'region' => env('AWS_DEFAULT_REGION') ?: env('AWS_FILE_MANAGER_DEFAULT_REGION'),
+                    'bucket' => env('AWS_BUCKET') ?: env('AWS_FILE_MANAGER_BUCKET'),
+                ]);
+
+                $copied = false;
+                $stream = $vaporDisk->readStream($tempKey);
+
+                if ($stream) {
+                    $copied = $this->storage->writeStream($targetPath, $stream);
+                    if (is_resource($stream)) {
+                        fclose($stream);
+                    }
+                }
+
+                if ($copied) {
+                    $vaporDisk->delete($tempKey);
                     
                     $this->setVisibility($currentFolder, $fileName, $visibility);
 
@@ -252,12 +270,16 @@ class FileManagerService
 
                     return response()->json(['success' => true, 'name' => $fileName]);
                 } else {
-                    Storage::disk('s3')->delete($tempKey);
-                    \Log::warning("S3 copy returned false: from {$tempKey} to {$targetPath}");
+                    $vaporDisk->delete($tempKey);
+                    \Log::warning("S3 copy/transfer returned false: from {$tempKey} to {$targetPath}");
                     return response()->json(['success' => false]);
                 }
             } catch (\Exception $e) {
-                Storage::disk('s3')->delete($tempKey);
+                if (isset($vaporDisk)) {
+                    try {
+                        $vaporDisk->delete($tempKey);
+                    } catch (\Exception $ex) {}
+                }
                 \Log::error("Failed to copy Vapor uploaded file from {$tempKey} to {$targetPath}: " . $e->getMessage());
                 return response()->json(['success' => false, 'error' => $e->getMessage()]);
             }

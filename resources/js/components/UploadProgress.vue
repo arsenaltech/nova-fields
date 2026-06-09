@@ -192,19 +192,20 @@ export default {
               this.$emit('removeFile', file.id);
             }, 2000);
           } else {
-            Nova.error(this.__(
-              'Error uploading the file. Check your MaxFilesize or permissions 2'
-            ), { type: 'error' });
+            let errorMessage = response.data.error || this.__('Error uploading the file. Check your MaxFilesize or permissions 2');
+            Nova.error(errorMessage, { type: 'error' });
           }
         })
         .catch(error => {
-          if (error.response.data.errors) {
+          if (error?.response?.data?.errors) {
             let errors = error.response.data.errors;
             let errorsArray = Object.values(errors).flat();
 
             let errorMessage = errorsArray.join('<br>');
 
             Nova.error(errorMessage, { type: 'error' });
+          } else if (error?.response?.data?.message) {
+            Nova.error(error.response.data.message, { type: 'error' });
           } else {
             Nova.error(this.__(
               'Error uploading the file. Check your MaxFilesize or permissions 3'
@@ -244,14 +245,17 @@ export default {
               this.$emit('removeFile', file.id);
             }, 2000);
           } else {
-            Nova.error(this.__(
-              'Error uploading the file. Check your MaxFilesize or permissions 4'
-            ), { type: 'error' });
+            let errorMessage = response.data.error || this.__('Error uploading the file. Check your MaxFilesize or permissions 4');
+            Nova.error(errorMessage, { type: 'error' });
           }
         })
-        .catch(() => {
+        .catch(error => {
           this.error = true;
-        Nova.error(this.__('Error uploading the file. Check your MaxFilesize or permissions 5'), { type: 'error' });
+          if (error?.response?.data?.message) {
+            Nova.error(error.response.data.message, { type: 'error' });
+          } else {
+            Nova.error(this.__('Error uploading the file. Check your MaxFilesize or permissions 5'), { type: 'error' });
+          }
           setTimeout(() => {
             this.$emit('removeFile', file.id);
           }, 1000);
