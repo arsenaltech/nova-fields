@@ -49,6 +49,7 @@
 </template>
 
 <script>
+import Vapor from 'laravel-vapor';
 import _ from 'lodash';
 import Progress from '../modules/Progress';
 
@@ -70,6 +71,11 @@ export default {
       type: Array,
       default: () => [],
       required: false,
+    },
+
+    useVapor: {
+      type: Boolean,
+      default: false,
     },
   },
 
@@ -109,6 +115,7 @@ export default {
     },
 
     startUpload(file) {
+      console.log('[Uploader Debug] startUpload called. useVapor is:', this.useVapor);
       let filePath;
 
       if (file.file.webkitRelativePath) {
@@ -119,8 +126,8 @@ export default {
         filePath = '/';
       }
 
-      if (window.Vapor) {
-        window.Vapor.store(file.file, {
+      if (this.useVapor) {
+        Vapor.store(file.file, {
           progress: progress => {
             file.progress = Math.round(progress * 100);
           }
@@ -173,6 +180,7 @@ export default {
     },
 
     uploadFileToServer(file, data, config) {
+      console.log('[Uploader Debug] uploadFileToServer called. Data keys:', Array.from(data.keys()));
       axios
         .post('/nova-r64-api/uploads/add', data, config)
         .then(response => {
@@ -223,6 +231,7 @@ export default {
     },
 
     uploadFolderToServer(file, data, config) {
+      console.log('[Uploader Debug] uploadFolderToServer called. Data keys:', Array.from(data.keys()));
       data.append('folder', true);
 
       axios

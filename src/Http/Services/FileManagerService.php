@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 use R64\NovaFields\Events\FileRemoved;
@@ -54,6 +55,11 @@ class FileManagerService
      * @var AbstractNamingStrategy
      */
     protected $namingStrategy;
+
+    /**
+     * @var mixed
+     */
+    protected $globalFilter;
 
     /**
      * @param Storage $storage
@@ -124,6 +130,7 @@ class FileManagerService
             'filters' => $filters,
             'buttons' => $this->getButtons($isMultipleSelection),
             'parent'  => $parent,
+            'use_vapor' => strtolower(config('filemanager.disk')) === 's3',
         ]);
     }
 
@@ -222,6 +229,9 @@ class FileManagerService
      */
     public function uploadFile($file, $currentFolder, $visibility, $uploadingFolder = false, array $rules = [])
     {
+        Log::info("FileManagerService::uploadFile request inputs: " . json_encode(request()->all()));
+        Log::info("FileManagerService::uploadFile has vaporFile: " . (request()->has('vaporFile') ? 'yes' : 'no'));
+        
         if (request()->has('vaporFile')) {
             $vaporFile = request()->input('vaporFile');
             $tempKey = $vaporFile['key'];
@@ -245,7 +255,7 @@ class FileManagerService
                 $stream = $vaporDisk->readStream($tempKey);
 
                 if (!$stream) {
-                    \Log::warning("S3 readStream returned false for key: {$tempKey}");
+                    Log::warning("S3 readStream returned false for key: {$tempKey}");
                     return response()->json(['success' => false, 'error' => "S3 readStream failed for key: {$tempKey}. Check bucket name and permissions."]);
                 }
 
@@ -260,7 +270,7 @@ class FileManagerService
                     try {
                         $vaporDisk->delete($tempKey);
                     } catch (\Exception $ex) {
-                        \Log::warning("Failed to delete Vapor temp file: " . $ex->getMessage());
+                        Log::warning("Failed to delete Vapor temp file: " . $ex->getMessage());
                     }
                     
                     $this->setVisibility($currentFolder, $fileName, $visibility);
@@ -272,7 +282,7 @@ class FileManagerService
                             $this->checkJobs($this->storage, $fullPath);
                             event(new FileUploaded($this->storage, $fullPath));
                         } catch (\Exception $e) {
-                            \Log::error("Post-upload tasks failed for {$fullPath}: " . $e->getMessage());
+                            Log::error("Post-upload tasks failed for {$fullPath}: " . $e->getMessage());
                         }
                     }
 
@@ -283,7 +293,7 @@ class FileManagerService
                     try {
                         $vaporDisk->delete($tempKey);
                     } catch (\Exception $ex) {}
-                    \Log::warning("S3 copy/transfer returned false: from {$tempKey} to {$targetPath}");
+                    Log::warning("S3 copy/transfer returned false: from {$tempKey} to {$targetPath}");
                     return response()->json(['success' => false, 'error' => "S3 writeStream failed to write to path: {$targetPath}"]);
                 }
             } catch (\Exception $e) {
@@ -292,7 +302,7 @@ class FileManagerService
                         $vaporDisk->delete($tempKey);
                     } catch (\Exception $ex) {}
                 }
-                \Log::error("Failed to copy Vapor uploaded file from {$tempKey} to {$targetPath}: " . $e->getMessage());
+                Log::error("Failed to copy Vapor uploaded file from {$tempKey} to {$targetPath}: " . $e->getMessage());
                 return response()->json(['success' => false, 'error' => $e->getMessage()]);
             }
         }
@@ -317,7 +327,7 @@ class FileManagerService
                     event(new FileUploaded($this->storage, $fullPath));
                 } catch (\Exception $e) {
                     // Log error but continue to clear cache since file was uploaded
-                    \Log::error("Post-upload tasks failed for {$fullPath}: " . $e->getMessage());
+                    Log::error("Post-upload tasks failed for {$fullPath}: " . $e->getMessage());
                 }
             }
 
@@ -326,6 +336,7 @@ class FileManagerService
 
             return response()->json(['success' => true, 'name' => $fileName]);
         } else {
+            Log::warning("FileManagerService::uploadFile fallback putFileAs returned false. File name: {$fileName}, Current folder: {$currentFolder}");
             return response()->json(['success' => false]);
         }
     }

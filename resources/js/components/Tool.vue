@@ -119,7 +119,7 @@
       >
       </DetailPopup>
 
-      <UploadProgress ref="uploader" :current="currentPath" v-on:removeFile="removeFileFromUpload"></UploadProgress>
+      <UploadProgress ref="uploader" :current="currentPath" :use-vapor="useVapor" v-on:removeFile="removeFileFromUpload"></UploadProgress>
     </div>
   </div>
 </template>
@@ -176,7 +176,8 @@ export default {
     buttons: [],
     moveType:null,
     movePath:'',
-    isMoveFiles:false
+    isMoveFiles:false,
+    useVapor: false
   }),
 
   async created() {
@@ -247,6 +248,7 @@ export default {
             this.filters = result.filters;
             this.parent = result.parent;
             this.buttons = result.buttons;
+            this.useVapor = result.use_vapor || false;
 
             this.loadingfiles = false;
           })

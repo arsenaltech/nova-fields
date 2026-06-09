@@ -56,7 +56,7 @@
 
       <create-folder ref="createFolderModal" :active="showCreateFolder" :current="currentPath" v-on:closeCreateFolderModal="closeModalCreateFolder" v-on:refresh="refreshCurrent" />
 
-      <UploadProgress ref="uploader" :current="currentPath" :visibility="field.visibility" :rules="field.upload_rules" v-on:removeFile="removeFileFromUpload"></UploadProgress>
+      <UploadProgress ref="uploader" :current="currentPath" :visibility="field.visibility" :rules="field.upload_rules" :use-vapor="field.use_vapor" v-on:removeFile="removeFileFromUpload"></UploadProgress>
 
       <file-select :id="field.name" :classes="inputClasses" :selectMultiple="field.selectMultiple"  :url="selectImageUrl"  :field="field" :file-type="fileType"  :is-readonly="field.readonly" :css="errorClasses"  v-model="value" v-on:open-modal="openFilemanagerModal"></file-select>
 

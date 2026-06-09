@@ -408,6 +408,7 @@ class Filemanager extends Field implements Cover
                 'panelWrapperClasses' => $this->panelWrapperClasses,
                 'indexLinkClasses' => $this->indexLinkClasses,
                 'excerptClasses' => $this->excerptClasses,
+                'use_vapor' => strtolower(config('filemanager.disk')) === 's3',
             ], $this->meta)
         );
     }
