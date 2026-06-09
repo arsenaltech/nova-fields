@@ -5501,8 +5501,8 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
           var data = new FormData();
           data.append('vaporFile[uuid]', response.uuid);
           data.append('vaporFile[key]', response.key);
-          data.append('vaporFile[filename]', response.filename);
-          data.append('vaporFile[extension]', response.extension);
+          data.append('vaporFile[filename]', file.file.name);
+          data.append('vaporFile[extension]', file.file.name.split('.').pop());
           data.append('current', _this2.current + '/' + filePath);
           data.append('visibility', _this2.visibility);
           if (_this2.type == 'files') {

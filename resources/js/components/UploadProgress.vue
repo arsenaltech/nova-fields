@@ -135,8 +135,8 @@ export default {
           let data = new FormData();
           data.append('vaporFile[uuid]', response.uuid);
           data.append('vaporFile[key]', response.key);
-          data.append('vaporFile[filename]', response.filename);
-          data.append('vaporFile[extension]', response.extension);
+          data.append('vaporFile[filename]', file.file.name);
+          data.append('vaporFile[extension]', file.file.name.split('.').pop());
           data.append('current', this.current + '/' + filePath);
           data.append('visibility', this.visibility);
 
