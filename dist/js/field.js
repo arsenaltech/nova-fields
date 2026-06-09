@@ -5473,14 +5473,7 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
       }))();
     },
     startUpload: function startUpload(file) {
-      var config = {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        },
-        onUploadProgress: function onUploadProgress(progressEvent) {
-          file.progress = parseInt(Math.round(progressEvent.loaded * 100 / progressEvent.total));
-        }
-      };
+      var _this2 = this;
       var filePath;
       if (file.file.webkitRelativePath) {
         filePath = file.file.webkitRelativePath.replace('/' + file.file.name, '');
@@ -5489,32 +5482,75 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
       } else {
         filePath = '/';
       }
-      var data = new FormData();
-      data.append('file', file.file);
-      data.append('current', this.current + '/' + filePath);
-      data.append('visibility', this.visibility);
-      if (this.type == 'files') {
-        data.append('rules', JSON.stringify(this.rules));
-        this.uploadFileToServer(file, data, config);
+      if (window.Vapor) {
+        window.Vapor.store(file.file, {
+          progress: function progress(_progress) {
+            file.progress = Math.round(_progress * 100);
+          }
+        }).then(function (response) {
+          var data = new FormData();
+          data.append('vaporFile[uuid]', response.uuid);
+          data.append('vaporFile[key]', response.key);
+          data.append('vaporFile[filename]', response.filename);
+          data.append('vaporFile[extension]', response.extension);
+          data.append('current', _this2.current + '/' + filePath);
+          data.append('visibility', _this2.visibility);
+          if (_this2.type == 'files') {
+            data.append('rules', JSON.stringify(_this2.rules));
+            _this2.uploadFileToServer(file, data, {});
+          } else {
+            _this2.uploadFolderToServer(file, data, {});
+          }
+        })["catch"](function (error) {
+          file.error = true;
+          Nova.error(_this2.__('Error uploading the file. Check your MaxFilesize or permissions'), {
+            type: 'error'
+          });
+          setTimeout(function () {
+            _this2.$emit('removeFile', file.id);
+          }, 1000);
+        });
       } else {
-        this.uploadFolderToServer(file, data, config);
+        var config = {
+          headers: {
+            'Content-Type': 'multipart/form-data'
+          },
+          onUploadProgress: function onUploadProgress(progressEvent) {
+            file.progress = parseInt(Math.round(progressEvent.loaded * 100 / progressEvent.total));
+          }
+        };
+        var data = new FormData();
+        data.append('file', file.file);
+        data.append('current', this.current + '/' + filePath);
+        data.append('visibility', this.visibility);
+        if (this.type == 'files') {
+          data.append('rules', JSON.stringify(this.rules));
+          this.uploadFileToServer(file, data, config);
+        } else {
+          this.uploadFolderToServer(file, data, config);
+        }
       }
     },
     uploadFileToServer: function uploadFileToServer(file, data, config) {
-      var _this2 = this;
+      var _this3 = this;
       axios__WEBPACK_IMPORTED_MODULE_2___default().post('/nova-r64-api/uploads/add', data, config).then(function (response) {
         if (response.data.success == true) {
-          lodash__WEBPACK_IMPORTED_MODULE_0___default().forEach(_this2.files, function (fileUpload) {
+          Nova.success(_this3.__('File :name uploaded successfully', {
+            name: response.data.name || file.name
+          }), {
+            type: 'success'
+          });
+          lodash__WEBPACK_IMPORTED_MODULE_0___default().forEach(_this3.files, function (fileUpload) {
             if (fileUpload.name == response.data.name) {
               fileUpload.upload = true;
             }
           });
-          _this2.filesUploaded.push(file.id);
+          _this3.filesUploaded.push(file.id);
           setTimeout(function () {
-            _this2.$emit('removeFile', file.id);
+            _this3.$emit('removeFile', file.id);
           }, 2000);
         } else {
-          Nova.error(_this2.__('Error uploading the file. Check your MaxFilesize or permissions'), {
+          Nova.error(_this3.__('Error uploading the file. Check your MaxFilesize or permissions'), {
             type: 'error'
           });
         }
@@ -5527,43 +5563,48 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
             type: 'error'
           });
         } else {
-          Nova.error(_this2.__('Error uploading the file. Check your MaxFilesize or permissions'), {
+          Nova.error(_this3.__('Error uploading the file. Check your MaxFilesize or permissions'), {
             type: 'error'
           });
         }
         file.error = true;
         setTimeout(function () {
-          _this2.$emit('removeFile', file.id);
+          _this3.$emit('removeFile', file.id);
         }, 1000);
       });
     },
     uploadFolderToServer: function uploadFolderToServer(file, data, config) {
-      var _this3 = this;
+      var _this4 = this;
       data.append('folder', true);
       axios__WEBPACK_IMPORTED_MODULE_2___default().post('/nova-r64-api/uploads/add', data, config).then(function (response) {
         if (response.data.success == true) {
-          lodash__WEBPACK_IMPORTED_MODULE_0___default().forEach(_this3.files, function (fileUpload) {
+          Nova.success(_this4.__('Folder file :name uploaded successfully', {
+            name: response.data.name || file.name
+          }), {
+            type: 'success'
+          });
+          lodash__WEBPACK_IMPORTED_MODULE_0___default().forEach(_this4.files, function (fileUpload) {
             if (fileUpload.name == response.data.name) {
               fileUpload.upload = true;
             }
           });
-          _this3.filesUploaded.push(file.id);
-          _this3.totalPercent = 100 * _this3.filesUploaded.length / _this3.files.length;
+          _this4.filesUploaded.push(file.id);
+          _this4.totalPercent = 100 * _this4.filesUploaded.length / _this4.files.length;
           setTimeout(function () {
-            _this3.$emit('removeFile', file.id);
+            _this4.$emit('removeFile', file.id);
           }, 2000);
         } else {
-          Nova.error(_this3.__('Error uploading the file. Check your MaxFilesize or permissions'), {
+          Nova.error(_this4.__('Error uploading the file. Check your MaxFilesize or permissions'), {
             type: 'error'
           });
         }
       })["catch"](function () {
-        _this3.error = true;
-        Nova.error(_this3.__('Error uploading the file. Check your MaxFilesize or permissions'), {
+        _this4.error = true;
+        Nova.error(_this4.__('Error uploading the file. Check your MaxFilesize or permissions'), {
           type: 'error'
         });
         setTimeout(function () {
-          _this3.$emit('removeFile', file.id);
+          _this4.$emit('removeFile', file.id);
         }, 1000);
       });
     },
@@ -22435,6 +22476,98 @@ function singularOrPlural(value, suffix) {
   if (value > 1 || value == 0) return inflector_js__WEBPACK_IMPORTED_MODULE_0___default().pluralize(suffix);
   return inflector_js__WEBPACK_IMPORTED_MODULE_0___default().singularize(suffix);
 }
+
+/***/ }),
+
+/***/ "./node_modules/call-bind-apply-helpers/actualApply.js":
+/*!*************************************************************!*\
+  !*** ./node_modules/call-bind-apply-helpers/actualApply.js ***!
+  \*************************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var bind = __webpack_require__(/*! function-bind */ "./node_modules/function-bind/index.js");
+
+var $apply = __webpack_require__(/*! ./functionApply */ "./node_modules/call-bind-apply-helpers/functionApply.js");
+var $call = __webpack_require__(/*! ./functionCall */ "./node_modules/call-bind-apply-helpers/functionCall.js");
+var $reflectApply = __webpack_require__(/*! ./reflectApply */ "./node_modules/call-bind-apply-helpers/reflectApply.js");
+
+/** @type {import('./actualApply')} */
+module.exports = $reflectApply || bind.call($call, $apply);
+
+
+/***/ }),
+
+/***/ "./node_modules/call-bind-apply-helpers/functionApply.js":
+/*!***************************************************************!*\
+  !*** ./node_modules/call-bind-apply-helpers/functionApply.js ***!
+  \***************************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/** @type {import('./functionApply')} */
+module.exports = Function.prototype.apply;
+
+
+/***/ }),
+
+/***/ "./node_modules/call-bind-apply-helpers/functionCall.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/call-bind-apply-helpers/functionCall.js ***!
+  \**************************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/** @type {import('./functionCall')} */
+module.exports = Function.prototype.call;
+
+
+/***/ }),
+
+/***/ "./node_modules/call-bind-apply-helpers/index.js":
+/*!*******************************************************!*\
+  !*** ./node_modules/call-bind-apply-helpers/index.js ***!
+  \*******************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var bind = __webpack_require__(/*! function-bind */ "./node_modules/function-bind/index.js");
+var $TypeError = __webpack_require__(/*! es-errors/type */ "./node_modules/es-errors/type.js");
+
+var $call = __webpack_require__(/*! ./functionCall */ "./node_modules/call-bind-apply-helpers/functionCall.js");
+var $actualApply = __webpack_require__(/*! ./actualApply */ "./node_modules/call-bind-apply-helpers/actualApply.js");
+
+/** @type {(args: [Function, thisArg?: unknown, ...args: unknown[]]) => Function} TODO FIXME, find a way to use import('.') */
+module.exports = function callBindBasic(args) {
+	if (args.length < 1 || typeof args[0] !== 'function') {
+		throw new $TypeError('a function is required');
+	}
+	return $actualApply(bind, $call, args);
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/call-bind-apply-helpers/reflectApply.js":
+/*!**************************************************************!*\
+  !*** ./node_modules/call-bind-apply-helpers/reflectApply.js ***!
+  \**************************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/** @type {import('./reflectApply')} */
+module.exports = typeof Reflect !== 'undefined' && Reflect && Reflect.apply;
+
 
 /***/ }),
 
@@ -49519,19 +49652,58 @@ module.exports = function defineDataProperty(
 
 /***/ }),
 
-/***/ "./node_modules/es-define-property/index.js":
-/*!**************************************************!*\
-  !*** ./node_modules/es-define-property/index.js ***!
-  \**************************************************/
+/***/ "./node_modules/dunder-proto/get.js":
+/*!******************************************!*\
+  !*** ./node_modules/dunder-proto/get.js ***!
+  \******************************************/
 /***/ ((module, __unused_webpack_exports, __webpack_require__) => {
 
 "use strict";
 
 
-var GetIntrinsic = __webpack_require__(/*! get-intrinsic */ "./node_modules/get-intrinsic/index.js");
+var callBind = __webpack_require__(/*! call-bind-apply-helpers */ "./node_modules/call-bind-apply-helpers/index.js");
+var gOPD = __webpack_require__(/*! gopd */ "./node_modules/gopd/index.js");
+
+var hasProtoAccessor;
+try {
+	// eslint-disable-next-line no-extra-parens, no-proto
+	hasProtoAccessor = /** @type {{ __proto__?: typeof Array.prototype }} */ ([]).__proto__ === Array.prototype;
+} catch (e) {
+	if (!e || typeof e !== 'object' || !('code' in e) || e.code !== 'ERR_PROTO_ACCESS') {
+		throw e;
+	}
+}
+
+// eslint-disable-next-line no-extra-parens
+var desc = !!hasProtoAccessor && gOPD && gOPD(Object.prototype, /** @type {keyof typeof Object.prototype} */ ('__proto__'));
+
+var $Object = Object;
+var $getPrototypeOf = $Object.getPrototypeOf;
+
+/** @type {import('./get')} */
+module.exports = desc && typeof desc.get === 'function'
+	? callBind([desc.get])
+	: typeof $getPrototypeOf === 'function'
+		? /** @type {import('./get')} */ function getDunder(value) {
+			// eslint-disable-next-line eqeqeq
+			return $getPrototypeOf(value == null ? value : $Object(value));
+		}
+		: false;
+
+
+/***/ }),
+
+/***/ "./node_modules/es-define-property/index.js":
+/*!**************************************************!*\
+  !*** ./node_modules/es-define-property/index.js ***!
+  \**************************************************/
+/***/ ((module) => {
+
+"use strict";
+
 
 /** @type {import('.')} */
-var $defineProperty = GetIntrinsic('%Object.defineProperty%', true) || false;
+var $defineProperty = Object.defineProperty || false;
 if ($defineProperty) {
 	try {
 		$defineProperty({}, 'a', { value: 1 });
@@ -49647,6 +49819,21 @@ module.exports = TypeError;
 
 /** @type {import('./uri')} */
 module.exports = URIError;
+
+
+/***/ }),
+
+/***/ "./node_modules/es-object-atoms/index.js":
+/*!***********************************************!*\
+  !*** ./node_modules/es-object-atoms/index.js ***!
+  \***********************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/** @type {import('.')} */
+module.exports = Object;
 
 
 /***/ }),
@@ -53305,6 +53492,8 @@ module.exports = Function.prototype.bind || implementation;
 
 var undefined;
 
+var $Object = __webpack_require__(/*! es-object-atoms */ "./node_modules/es-object-atoms/index.js");
+
 var $Error = __webpack_require__(/*! es-errors */ "./node_modules/es-errors/index.js");
 var $EvalError = __webpack_require__(/*! es-errors/eval */ "./node_modules/es-errors/eval.js");
 var $RangeError = __webpack_require__(/*! es-errors/range */ "./node_modules/es-errors/range.js");
@@ -53312,6 +53501,14 @@ var $ReferenceError = __webpack_require__(/*! es-errors/ref */ "./node_modules/e
 var $SyntaxError = __webpack_require__(/*! es-errors/syntax */ "./node_modules/es-errors/syntax.js");
 var $TypeError = __webpack_require__(/*! es-errors/type */ "./node_modules/es-errors/type.js");
 var $URIError = __webpack_require__(/*! es-errors/uri */ "./node_modules/es-errors/uri.js");
+
+var abs = __webpack_require__(/*! math-intrinsics/abs */ "./node_modules/math-intrinsics/abs.js");
+var floor = __webpack_require__(/*! math-intrinsics/floor */ "./node_modules/math-intrinsics/floor.js");
+var max = __webpack_require__(/*! math-intrinsics/max */ "./node_modules/math-intrinsics/max.js");
+var min = __webpack_require__(/*! math-intrinsics/min */ "./node_modules/math-intrinsics/min.js");
+var pow = __webpack_require__(/*! math-intrinsics/pow */ "./node_modules/math-intrinsics/pow.js");
+var round = __webpack_require__(/*! math-intrinsics/round */ "./node_modules/math-intrinsics/round.js");
+var sign = __webpack_require__(/*! math-intrinsics/sign */ "./node_modules/math-intrinsics/sign.js");
 
 var $Function = Function;
 
@@ -53322,14 +53519,8 @@ var getEvalledConstructor = function (expressionSyntax) {
 	} catch (e) {}
 };
 
-var $gOPD = Object.getOwnPropertyDescriptor;
-if ($gOPD) {
-	try {
-		$gOPD({}, '');
-	} catch (e) {
-		$gOPD = null; // this is IE 8, which has a broken gOPD
-	}
-}
+var $gOPD = __webpack_require__(/*! gopd */ "./node_modules/gopd/index.js");
+var $defineProperty = __webpack_require__(/*! es-define-property */ "./node_modules/es-define-property/index.js");
 
 var throwTypeError = function () {
 	throw new $TypeError();
@@ -53352,13 +53543,13 @@ var ThrowTypeError = $gOPD
 	: throwTypeError;
 
 var hasSymbols = __webpack_require__(/*! has-symbols */ "./node_modules/has-symbols/index.js")();
-var hasProto = __webpack_require__(/*! has-proto */ "./node_modules/has-proto/index.js")();
 
-var getProto = Object.getPrototypeOf || (
-	hasProto
-		? function (x) { return x.__proto__; } // eslint-disable-line no-proto
-		: null
-);
+var getProto = __webpack_require__(/*! get-proto */ "./node_modules/get-proto/index.js");
+var $ObjectGPO = __webpack_require__(/*! get-proto/Object.getPrototypeOf */ "./node_modules/get-proto/Object.getPrototypeOf.js");
+var $ReflectGPO = __webpack_require__(/*! get-proto/Reflect.getPrototypeOf */ "./node_modules/get-proto/Reflect.getPrototypeOf.js");
+
+var $apply = __webpack_require__(/*! call-bind-apply-helpers/functionApply */ "./node_modules/call-bind-apply-helpers/functionApply.js");
+var $call = __webpack_require__(/*! call-bind-apply-helpers/functionCall */ "./node_modules/call-bind-apply-helpers/functionCall.js");
 
 var needsEval = {};
 
@@ -53389,6 +53580,7 @@ var INTRINSICS = {
 	'%Error%': $Error,
 	'%eval%': eval, // eslint-disable-line no-eval
 	'%EvalError%': $EvalError,
+	'%Float16Array%': typeof Float16Array === 'undefined' ? undefined : Float16Array,
 	'%Float32Array%': typeof Float32Array === 'undefined' ? undefined : Float32Array,
 	'%Float64Array%': typeof Float64Array === 'undefined' ? undefined : Float64Array,
 	'%FinalizationRegistry%': typeof FinalizationRegistry === 'undefined' ? undefined : FinalizationRegistry,
@@ -53405,7 +53597,8 @@ var INTRINSICS = {
 	'%MapIteratorPrototype%': typeof Map === 'undefined' || !hasSymbols || !getProto ? undefined : getProto(new Map()[Symbol.iterator]()),
 	'%Math%': Math,
 	'%Number%': Number,
-	'%Object%': Object,
+	'%Object%': $Object,
+	'%Object.getOwnPropertyDescriptor%': $gOPD,
 	'%parseFloat%': parseFloat,
 	'%parseInt%': parseInt,
 	'%Promise%': typeof Promise === 'undefined' ? undefined : Promise,
@@ -53431,7 +53624,20 @@ var INTRINSICS = {
 	'%URIError%': $URIError,
 	'%WeakMap%': typeof WeakMap === 'undefined' ? undefined : WeakMap,
 	'%WeakRef%': typeof WeakRef === 'undefined' ? undefined : WeakRef,
-	'%WeakSet%': typeof WeakSet === 'undefined' ? undefined : WeakSet
+	'%WeakSet%': typeof WeakSet === 'undefined' ? undefined : WeakSet,
+
+	'%Function.prototype.call%': $call,
+	'%Function.prototype.apply%': $apply,
+	'%Object.defineProperty%': $defineProperty,
+	'%Object.getPrototypeOf%': $ObjectGPO,
+	'%Math.abs%': abs,
+	'%Math.floor%': floor,
+	'%Math.max%': max,
+	'%Math.min%': min,
+	'%Math.pow%': pow,
+	'%Math.round%': round,
+	'%Math.sign%': sign,
+	'%Reflect.getPrototypeOf%': $ReflectGPO
 };
 
 if (getProto) {
@@ -53526,11 +53732,11 @@ var LEGACY_ALIASES = {
 
 var bind = __webpack_require__(/*! function-bind */ "./node_modules/function-bind/index.js");
 var hasOwn = __webpack_require__(/*! hasown */ "./node_modules/hasown/index.js");
-var $concat = bind.call(Function.call, Array.prototype.concat);
-var $spliceApply = bind.call(Function.apply, Array.prototype.splice);
-var $replace = bind.call(Function.call, String.prototype.replace);
-var $strSlice = bind.call(Function.call, String.prototype.slice);
-var $exec = bind.call(Function.call, RegExp.prototype.exec);
+var $concat = bind.call($call, Array.prototype.concat);
+var $spliceApply = bind.call($apply, Array.prototype.splice);
+var $replace = bind.call($call, String.prototype.replace);
+var $strSlice = bind.call($call, String.prototype.slice);
+var $exec = bind.call($call, RegExp.prototype.exec);
 
 /* adapted from https://github.com/lodash/lodash/blob/4.17.15/dist/lodash.js#L6735-L6744 */
 var rePropName = /[^%.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|%$))/g;
@@ -53664,6 +53870,91 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 
 /***/ }),
 
+/***/ "./node_modules/get-proto/Object.getPrototypeOf.js":
+/*!*********************************************************!*\
+  !*** ./node_modules/get-proto/Object.getPrototypeOf.js ***!
+  \*********************************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var $Object = __webpack_require__(/*! es-object-atoms */ "./node_modules/es-object-atoms/index.js");
+
+/** @type {import('./Object.getPrototypeOf')} */
+module.exports = $Object.getPrototypeOf || null;
+
+
+/***/ }),
+
+/***/ "./node_modules/get-proto/Reflect.getPrototypeOf.js":
+/*!**********************************************************!*\
+  !*** ./node_modules/get-proto/Reflect.getPrototypeOf.js ***!
+  \**********************************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/** @type {import('./Reflect.getPrototypeOf')} */
+module.exports = (typeof Reflect !== 'undefined' && Reflect.getPrototypeOf) || null;
+
+
+/***/ }),
+
+/***/ "./node_modules/get-proto/index.js":
+/*!*****************************************!*\
+  !*** ./node_modules/get-proto/index.js ***!
+  \*****************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var reflectGetProto = __webpack_require__(/*! ./Reflect.getPrototypeOf */ "./node_modules/get-proto/Reflect.getPrototypeOf.js");
+var originalGetProto = __webpack_require__(/*! ./Object.getPrototypeOf */ "./node_modules/get-proto/Object.getPrototypeOf.js");
+
+var getDunderProto = __webpack_require__(/*! dunder-proto/get */ "./node_modules/dunder-proto/get.js");
+
+/** @type {import('.')} */
+module.exports = reflectGetProto
+	? function getProto(O) {
+		// @ts-expect-error TS can't narrow inside a closure, for some reason
+		return reflectGetProto(O);
+	}
+	: originalGetProto
+		? function getProto(O) {
+			if (!O || (typeof O !== 'object' && typeof O !== 'function')) {
+				throw new TypeError('getProto: not an object');
+			}
+			// @ts-expect-error TS can't narrow inside a closure, for some reason
+			return originalGetProto(O);
+		}
+		: getDunderProto
+			? function getProto(O) {
+				// @ts-expect-error TS can't narrow inside a closure, for some reason
+				return getDunderProto(O);
+			}
+			: null;
+
+
+/***/ }),
+
+/***/ "./node_modules/gopd/gOPD.js":
+/*!***********************************!*\
+  !*** ./node_modules/gopd/gOPD.js ***!
+  \***********************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/** @type {import('./gOPD')} */
+module.exports = Object.getOwnPropertyDescriptor;
+
+
+/***/ }),
+
 /***/ "./node_modules/gopd/index.js":
 /*!************************************!*\
   !*** ./node_modules/gopd/index.js ***!
@@ -53673,9 +53964,8 @@ module.exports = function GetIntrinsic(name, allowMissing) {
 "use strict";
 
 
-var GetIntrinsic = __webpack_require__(/*! get-intrinsic */ "./node_modules/get-intrinsic/index.js");
-
-var $gOPD = GetIntrinsic('%Object.getOwnPropertyDescriptor%', true);
+/** @type {import('.')} */
+var $gOPD = __webpack_require__(/*! ./gOPD */ "./node_modules/gopd/gOPD.js");
 
 if ($gOPD) {
 	try {
@@ -53724,32 +54014,6 @@ module.exports = hasPropertyDescriptors;
 
 /***/ }),
 
-/***/ "./node_modules/has-proto/index.js":
-/*!*****************************************!*\
-  !*** ./node_modules/has-proto/index.js ***!
-  \*****************************************/
-/***/ ((module) => {
-
-"use strict";
-
-
-var test = {
-	__proto__: null,
-	foo: {}
-};
-
-var $Object = Object;
-
-/** @type {import('.')} */
-module.exports = function hasProto() {
-	// @ts-expect-error: TS errors on an inherited property for some reason
-	return { __proto__: test }.foo === test.foo
-		&& !(test instanceof $Object);
-};
-
-
-/***/ }),
-
 /***/ "./node_modules/has-symbols/index.js":
 /*!*******************************************!*\
   !*** ./node_modules/has-symbols/index.js ***!
@@ -53762,6 +54026,7 @@ module.exports = function hasProto() {
 var origSymbol = typeof Symbol !== 'undefined' && Symbol;
 var hasSymbolSham = __webpack_require__(/*! ./shams */ "./node_modules/has-symbols/shams.js");
 
+/** @type {import('.')} */
 module.exports = function hasNativeSymbols() {
 	if (typeof origSymbol !== 'function') { return false; }
 	if (typeof Symbol !== 'function') { return false; }
@@ -53783,11 +54048,13 @@ module.exports = function hasNativeSymbols() {
 "use strict";
 
 
+/** @type {import('./shams')} */
 /* eslint complexity: [2, 18], max-statements: [2, 33] */
 module.exports = function hasSymbols() {
 	if (typeof Symbol !== 'function' || typeof Object.getOwnPropertySymbols !== 'function') { return false; }
 	if (typeof Symbol.iterator === 'symbol') { return true; }
 
+	/** @type {{ [k in symbol]?: unknown }} */
 	var obj = {};
 	var sym = Symbol('test');
 	var symObj = Object(sym);
@@ -53806,7 +54073,7 @@ module.exports = function hasSymbols() {
 
 	var symVal = 42;
 	obj[sym] = symVal;
-	for (sym in obj) { return false; } // eslint-disable-line no-restricted-syntax, no-unreachable-loop
+	for (var _ in obj) { return false; } // eslint-disable-line no-restricted-syntax, no-unreachable-loop
 	if (typeof Object.keys === 'function' && Object.keys(obj).length !== 0) { return false; }
 
 	if (typeof Object.getOwnPropertyNames === 'function' && Object.getOwnPropertyNames(obj).length !== 0) { return false; }
@@ -53817,7 +54084,8 @@ module.exports = function hasSymbols() {
 	if (!Object.prototype.propertyIsEnumerable.call(obj, sym)) { return false; }
 
 	if (typeof Object.getOwnPropertyDescriptor === 'function') {
-		var descriptor = Object.getOwnPropertyDescriptor(obj, sym);
+		// eslint-disable-next-line no-extra-parens
+		var descriptor = /** @type {PropertyDescriptor} */ (Object.getOwnPropertyDescriptor(obj, sym));
 		if (descriptor.value !== symVal || descriptor.enumerable !== true) { return false; }
 	}
 
@@ -122189,6 +122457,135 @@ function words(string, pattern, guard) {
 }
 
 module.exports = words;
+
+
+/***/ }),
+
+/***/ "./node_modules/math-intrinsics/abs.js":
+/*!*********************************************!*\
+  !*** ./node_modules/math-intrinsics/abs.js ***!
+  \*********************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/** @type {import('./abs')} */
+module.exports = Math.abs;
+
+
+/***/ }),
+
+/***/ "./node_modules/math-intrinsics/floor.js":
+/*!***********************************************!*\
+  !*** ./node_modules/math-intrinsics/floor.js ***!
+  \***********************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/** @type {import('./floor')} */
+module.exports = Math.floor;
+
+
+/***/ }),
+
+/***/ "./node_modules/math-intrinsics/isNaN.js":
+/*!***********************************************!*\
+  !*** ./node_modules/math-intrinsics/isNaN.js ***!
+  \***********************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/** @type {import('./isNaN')} */
+module.exports = Number.isNaN || function isNaN(a) {
+	return a !== a;
+};
+
+
+/***/ }),
+
+/***/ "./node_modules/math-intrinsics/max.js":
+/*!*********************************************!*\
+  !*** ./node_modules/math-intrinsics/max.js ***!
+  \*********************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/** @type {import('./max')} */
+module.exports = Math.max;
+
+
+/***/ }),
+
+/***/ "./node_modules/math-intrinsics/min.js":
+/*!*********************************************!*\
+  !*** ./node_modules/math-intrinsics/min.js ***!
+  \*********************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/** @type {import('./min')} */
+module.exports = Math.min;
+
+
+/***/ }),
+
+/***/ "./node_modules/math-intrinsics/pow.js":
+/*!*********************************************!*\
+  !*** ./node_modules/math-intrinsics/pow.js ***!
+  \*********************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/** @type {import('./pow')} */
+module.exports = Math.pow;
+
+
+/***/ }),
+
+/***/ "./node_modules/math-intrinsics/round.js":
+/*!***********************************************!*\
+  !*** ./node_modules/math-intrinsics/round.js ***!
+  \***********************************************/
+/***/ ((module) => {
+
+"use strict";
+
+
+/** @type {import('./round')} */
+module.exports = Math.round;
+
+
+/***/ }),
+
+/***/ "./node_modules/math-intrinsics/sign.js":
+/*!**********************************************!*\
+  !*** ./node_modules/math-intrinsics/sign.js ***!
+  \**********************************************/
+/***/ ((module, __unused_webpack_exports, __webpack_require__) => {
+
+"use strict";
+
+
+var $isNaN = __webpack_require__(/*! ./isNaN */ "./node_modules/math-intrinsics/isNaN.js");
+
+/** @type {import('./sign')} */
+module.exports = function sign(number) {
+	if ($isNaN(number) || number === 0) {
+		return number;
+	}
+	return number < 0 ? -1 : +1;
+};
 
 
 /***/ }),

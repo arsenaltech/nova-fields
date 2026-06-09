@@ -177,6 +177,10 @@ export default {
         .post('/nova-r64-api/uploads/add', data, config)
         .then(response => {
           if (response.data.success == true) {
+            Nova.success(
+              this.__('File :name uploaded successfully', { name: response.data.name || file.name }),
+              { type: 'success' }
+            );
             _.forEach(this.files, fileUpload => {
               if (fileUpload.name == response.data.name) {
                 fileUpload.upload = true;
@@ -222,6 +226,10 @@ export default {
         .post('/nova-r64-api/uploads/add', data, config)
         .then(response => {
           if (response.data.success == true) {
+            Nova.success(
+              this.__('Folder file :name uploaded successfully', { name: response.data.name || file.name }),
+              { type: 'success' }
+            );
             _.forEach(this.files, fileUpload => {
               if (fileUpload.name == response.data.name) {
                 fileUpload.upload = true;
