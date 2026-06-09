@@ -147,6 +147,10 @@ export default {
             this.uploadFolderToServer(file, data, {});
           }
         }).catch(error => {
+          console.error('[Vapor Store Error] failed:', error);
+          if (error?.response) {
+            console.error('[Vapor Store Error Response]', error.response.status, error.response.data);
+          }
           file.error = true;
           Nova.error(this.__('Error uploading the file. Check your MaxFilesize or permissions 1'), { type: 'error' });
           setTimeout(() => {

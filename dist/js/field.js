@@ -5512,6 +5512,10 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
             _this2.uploadFolderToServer(file, data, {});
           }
         })["catch"](function (error) {
+          console.error('[Vapor Store Error] failed:', error);
+          if (error !== null && error !== void 0 && error.response) {
+            console.error('[Vapor Store Error Response]', error.response.status, error.response.data);
+          }
           file.error = true;
           Nova.error(_this2.__('Error uploading the file. Check your MaxFilesize or permissions 1'), {
             type: 'error'
