@@ -141,7 +141,7 @@ export default {
           }
         }).catch(error => {
           file.error = true;
-          Nova.error(this.__('Error uploading the file. Check your MaxFilesize or permissions'), { type: 'error' });
+          Nova.error(this.__('Error uploading the file. Check your MaxFilesize or permissions 1'), { type: 'error' });
           setTimeout(() => {
             this.$emit('removeFile', file.id);
           }, 1000);
@@ -193,7 +193,7 @@ export default {
             }, 2000);
           } else {
             Nova.error(this.__(
-              'Error uploading the file. Check your MaxFilesize or permissions'
+              'Error uploading the file. Check your MaxFilesize or permissions 2'
             ), { type: 'error' });
           }
         })
@@ -207,7 +207,7 @@ export default {
             Nova.error(errorMessage, { type: 'error' });
           } else {
             Nova.error(this.__(
-              'Error uploading the file. Check your MaxFilesize or permissions'
+              'Error uploading the file. Check your MaxFilesize or permissions 3'
             ), { type: 'error' });
           }
 
@@ -245,13 +245,13 @@ export default {
             }, 2000);
           } else {
             Nova.error(this.__(
-              'Error uploading the file. Check your MaxFilesize or permissions'
+              'Error uploading the file. Check your MaxFilesize or permissions 4'
             ), { type: 'error' });
           }
         })
         .catch(() => {
           this.error = true;
-        Nova.error(this.__('Error uploading the file. Check your MaxFilesize or permissions'), { type: 'error' });
+        Nova.error(this.__('Error uploading the file. Check your MaxFilesize or permissions 5'), { type: 'error' });
           setTimeout(() => {
             this.$emit('removeFile', file.id);
           }, 1000);

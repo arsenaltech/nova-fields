@@ -5503,7 +5503,7 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
           }
         })["catch"](function (error) {
           file.error = true;
-          Nova.error(_this2.__('Error uploading the file. Check your MaxFilesize or permissions'), {
+          Nova.error(_this2.__('Error uploading the file. Check your MaxFilesize or permissions 1'), {
             type: 'error'
           });
           setTimeout(function () {
@@ -5550,7 +5550,7 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
             _this3.$emit('removeFile', file.id);
           }, 2000);
         } else {
-          Nova.error(_this3.__('Error uploading the file. Check your MaxFilesize or permissions'), {
+          Nova.error(_this3.__('Error uploading the file. Check your MaxFilesize or permissions 2'), {
             type: 'error'
           });
         }
@@ -5563,7 +5563,7 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
             type: 'error'
           });
         } else {
-          Nova.error(_this3.__('Error uploading the file. Check your MaxFilesize or permissions'), {
+          Nova.error(_this3.__('Error uploading the file. Check your MaxFilesize or permissions 3'), {
             type: 'error'
           });
         }
@@ -5594,13 +5594,13 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
             _this4.$emit('removeFile', file.id);
           }, 2000);
         } else {
-          Nova.error(_this4.__('Error uploading the file. Check your MaxFilesize or permissions'), {
+          Nova.error(_this4.__('Error uploading the file. Check your MaxFilesize or permissions 4'), {
             type: 'error'
           });
         }
       })["catch"](function () {
         _this4.error = true;
-        Nova.error(_this4.__('Error uploading the file. Check your MaxFilesize or permissions'), {
+        Nova.error(_this4.__('Error uploading the file. Check your MaxFilesize or permissions 5'), {
           type: 'error'
         });
         setTimeout(function () {
