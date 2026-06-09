@@ -228,7 +228,8 @@ class FileManagerService
             $fileName = $vaporFile['filename'];
             $fileName = str_replace(" ", "_", $fileName);
             
-            $targetPath = $currentFolder ? $currentFolder . '/' . $fileName : $fileName;
+            $normalizedFolder = $this->normalizePath($currentFolder);
+            $targetPath = $normalizedFolder ? $normalizedFolder . '/' . $fileName : $fileName;
             
             try {
                 if ($this->storage->copy($tempKey, $targetPath)) {
@@ -236,7 +237,6 @@ class FileManagerService
                     
                     $this->setVisibility($currentFolder, $fileName, $visibility);
 
-                    $normalizedFolder = $this->normalizePath($currentFolder);
                     $fullPath = $normalizedFolder ? $normalizedFolder . '/' . $fileName : $fileName;
 
                     if (! $uploadingFolder) {
@@ -253,11 +253,12 @@ class FileManagerService
                     return response()->json(['success' => true, 'name' => $fileName]);
                 } else {
                     Storage::disk('s3')->delete($tempKey);
+                    \Log::warning("S3 copy returned false: from {$tempKey} to {$targetPath}");
                     return response()->json(['success' => false]);
                 }
             } catch (\Exception $e) {
                 Storage::disk('s3')->delete($tempKey);
-                \Log::error("Failed to copy Vapor uploaded file: " . $e->getMessage());
+                \Log::error("Failed to copy Vapor uploaded file from {$tempKey} to {$targetPath}: " . $e->getMessage());
                 return response()->json(['success' => false, 'error' => $e->getMessage()]);
             }
         }
