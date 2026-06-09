@@ -238,10 +238,16 @@ class FileManagerService
                     'secret' => env('AWS_SECRET_ACCESS_KEY') ?: env('AWS_FILE_MANAGER_SECRET_ACCESS_KEY'),
                     'region' => env('AWS_DEFAULT_REGION') ?: env('AWS_FILE_MANAGER_DEFAULT_REGION'),
                     'bucket' => env('AWS_BUCKET') ?: env('AWS_FILE_MANAGER_BUCKET'),
+                    'token' => env('AWS_SESSION_TOKEN'),
                 ]);
 
                 $copied = false;
                 $stream = $vaporDisk->readStream($tempKey);
+
+                if (!$stream) {
+                    \Log::warning("S3 readStream returned false for key: {$tempKey}");
+                    return response()->json(['success' => false, 'error' => "S3 readStream failed for key: {$tempKey}. Check bucket name and permissions."]);
+                }
 
                 if ($stream) {
                     $copied = $this->storage->writeStream($targetPath, $stream);
@@ -251,7 +257,11 @@ class FileManagerService
                 }
 
                 if ($copied) {
-                    $vaporDisk->delete($tempKey);
+                    try {
+                        $vaporDisk->delete($tempKey);
+                    } catch (\Exception $ex) {
+                        \Log::warning("Failed to delete Vapor temp file: " . $ex->getMessage());
+                    }
                     
                     $this->setVisibility($currentFolder, $fileName, $visibility);
 
@@ -270,9 +280,11 @@ class FileManagerService
 
                     return response()->json(['success' => true, 'name' => $fileName]);
                 } else {
-                    $vaporDisk->delete($tempKey);
+                    try {
+                        $vaporDisk->delete($tempKey);
+                    } catch (\Exception $ex) {}
                     \Log::warning("S3 copy/transfer returned false: from {$tempKey} to {$targetPath}");
-                    return response()->json(['success' => false]);
+                    return response()->json(['success' => false, 'error' => "S3 writeStream failed to write to path: {$targetPath}"]);
                 }
             } catch (\Exception $e) {
                 if (isset($vaporDisk)) {
@@ -627,10 +639,9 @@ class FileManagerService
      */
     private function setVisibility($folder, $file, $visibility)
     {
-        if ($folder != '/') {
-            $folder .= '/';
-        }
-        $this->storage->setVisibility($folder.$file, $visibility);
+        $normalizedFolder = $this->normalizePath($folder);
+        $path = $normalizedFolder ? $normalizedFolder . '/' . $file : $file;
+        $this->storage->setVisibility($path, $visibility);
     }
 
     /**
