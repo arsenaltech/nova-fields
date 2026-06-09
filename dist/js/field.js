@@ -5550,16 +5550,22 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
             _this3.$emit('removeFile', file.id);
           }, 2000);
         } else {
-          Nova.error(_this3.__('Error uploading the file. Check your MaxFilesize or permissions 2'), {
+          var errorMessage = response.data.error || _this3.__('Error uploading the file. Check your MaxFilesize or permissions 2');
+          Nova.error(errorMessage, {
             type: 'error'
           });
         }
       })["catch"](function (error) {
-        if (error.response.data.errors) {
+        var _error$response, _error$response2;
+        if (error !== null && error !== void 0 && (_error$response = error.response) !== null && _error$response !== void 0 && (_error$response = _error$response.data) !== null && _error$response !== void 0 && _error$response.errors) {
           var errors = error.response.data.errors;
           var errorsArray = Object.values(errors).flat();
           var errorMessage = errorsArray.join('<br>');
           Nova.error(errorMessage, {
+            type: 'error'
+          });
+        } else if (error !== null && error !== void 0 && (_error$response2 = error.response) !== null && _error$response2 !== void 0 && (_error$response2 = _error$response2.data) !== null && _error$response2 !== void 0 && _error$response2.message) {
+          Nova.error(error.response.data.message, {
             type: 'error'
           });
         } else {
@@ -5594,15 +5600,23 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
             _this4.$emit('removeFile', file.id);
           }, 2000);
         } else {
-          Nova.error(_this4.__('Error uploading the file. Check your MaxFilesize or permissions 4'), {
+          var errorMessage = response.data.error || _this4.__('Error uploading the file. Check your MaxFilesize or permissions 4');
+          Nova.error(errorMessage, {
             type: 'error'
           });
         }
-      })["catch"](function () {
+      })["catch"](function (error) {
+        var _error$response3;
         _this4.error = true;
-        Nova.error(_this4.__('Error uploading the file. Check your MaxFilesize or permissions 5'), {
-          type: 'error'
-        });
+        if (error !== null && error !== void 0 && (_error$response3 = error.response) !== null && _error$response3 !== void 0 && (_error$response3 = _error$response3.data) !== null && _error$response3 !== void 0 && _error$response3.message) {
+          Nova.error(error.response.data.message, {
+            type: 'error'
+          });
+        } else {
+          Nova.error(_this4.__('Error uploading the file. Check your MaxFilesize or permissions 5'), {
+            type: 'error'
+          });
+        }
         setTimeout(function () {
           _this4.$emit('removeFile', file.id);
         }, 1000);
