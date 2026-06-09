@@ -192,11 +192,13 @@ export default {
               this.$emit('removeFile', file.id);
             }, 2000);
           } else {
+            console.error('[Uploader Error] Response:', response.data);
             let errorMessage = response.data.error || this.__('Error uploading the file. Check your MaxFilesize or permissions 2');
             Nova.error(errorMessage, { type: 'error' });
           }
         })
         .catch(error => {
+          console.error('[Uploader Error] Request failed:', error);
           if (error?.response?.data?.errors) {
             let errors = error.response.data.errors;
             let errorsArray = Object.values(errors).flat();
@@ -245,12 +247,14 @@ export default {
               this.$emit('removeFile', file.id);
             }, 2000);
           } else {
+            console.error('[Uploader Folder Error] Response:', response.data);
             let errorMessage = response.data.error || this.__('Error uploading the file. Check your MaxFilesize or permissions 4');
             Nova.error(errorMessage, { type: 'error' });
           }
         })
         .catch(error => {
           this.error = true;
+          console.error('[Uploader Folder Error] Request failed:', error);
           if (error?.response?.data?.message) {
             Nova.error(error.response.data.message, { type: 'error' });
           } else {

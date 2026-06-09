@@ -5550,6 +5550,7 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
             _this3.$emit('removeFile', file.id);
           }, 2000);
         } else {
+          console.error('[Uploader Error] Response:', response.data);
           var errorMessage = response.data.error || _this3.__('Error uploading the file. Check your MaxFilesize or permissions 2');
           Nova.error(errorMessage, {
             type: 'error'
@@ -5557,6 +5558,7 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
         }
       })["catch"](function (error) {
         var _error$response, _error$response2;
+        console.error('[Uploader Error] Request failed:', error);
         if (error !== null && error !== void 0 && (_error$response = error.response) !== null && _error$response !== void 0 && (_error$response = _error$response.data) !== null && _error$response !== void 0 && _error$response.errors) {
           var errors = error.response.data.errors;
           var errorsArray = Object.values(errors).flat();
@@ -5600,6 +5602,7 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
             _this4.$emit('removeFile', file.id);
           }, 2000);
         } else {
+          console.error('[Uploader Folder Error] Response:', response.data);
           var errorMessage = response.data.error || _this4.__('Error uploading the file. Check your MaxFilesize or permissions 4');
           Nova.error(errorMessage, {
             type: 'error'
@@ -5608,6 +5611,7 @@ var token = document.head.querySelector('meta[name="csrf-token"]');
       })["catch"](function (error) {
         var _error$response3;
         _this4.error = true;
+        console.error('[Uploader Folder Error] Request failed:', error);
         if (error !== null && error !== void 0 && (_error$response3 = error.response) !== null && _error$response3 !== void 0 && (_error$response3 = _error$response3.data) !== null && _error$response3 !== void 0 && _error$response3.message) {
           Nova.error(error.response.data.message, {
             type: 'error'
