@@ -32,6 +32,7 @@
     "element-plus": "^2.2.9",
     "filesize": "^10.0.5",
     "flatpickr": "^4.6.13",
+    "laravel-vapor": "^0.7.1",
     "liquor-tree": "^0.2.70",
     "loadsh": "^0.0.4",
     "luxon": "^3.2.1",

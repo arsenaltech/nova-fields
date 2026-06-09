@@ -222,6 +222,46 @@ class FileManagerService
      */
     public function uploadFile($file, $currentFolder, $visibility, $uploadingFolder = false, array $rules = [])
     {
+        if (request()->has('vaporFile')) {
+            $vaporFile = request()->input('vaporFile');
+            $tempKey = $vaporFile['key'];
+            $fileName = $vaporFile['filename'];
+            $fileName = str_replace(" ", "_", $fileName);
+            
+            $targetPath = $currentFolder ? $currentFolder . '/' . $fileName : $fileName;
+            
+            try {
+                if ($this->storage->copy($tempKey, $targetPath)) {
+                    Storage::disk('s3')->delete($tempKey);
+                    
+                    $this->setVisibility($currentFolder, $fileName, $visibility);
+
+                    $normalizedFolder = $this->normalizePath($currentFolder);
+                    $fullPath = $normalizedFolder ? $normalizedFolder . '/' . $fileName : $fileName;
+
+                    if (! $uploadingFolder) {
+                        try {
+                            $this->checkJobs($this->storage, $fullPath);
+                            event(new FileUploaded($this->storage, $fullPath));
+                        } catch (\Exception $e) {
+                            \Log::error("Post-upload tasks failed for {$fullPath}: " . $e->getMessage());
+                        }
+                    }
+
+                    $this->forgetFolderCache($normalizedFolder);
+
+                    return response()->json(['success' => true, 'name' => $fileName]);
+                } else {
+                    Storage::disk('s3')->delete($tempKey);
+                    return response()->json(['success' => false]);
+                }
+            } catch (\Exception $e) {
+                Storage::disk('s3')->delete($tempKey);
+                \Log::error("Failed to copy Vapor uploaded file: " . $e->getMessage());
+                return response()->json(['success' => false, 'error' => $e->getMessage()]);
+            }
+        }
+
         if (count($rules) > 0) {
             $pases = Validator::make(['file' => $file], [
                 'file' => $rules,

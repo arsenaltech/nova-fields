@@ -109,17 +109,6 @@ export default {
     },
 
     startUpload(file) {
-      let config = {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-        onUploadProgress: progressEvent => {
-          file.progress = parseInt(
-            Math.round((progressEvent.loaded * 100) / progressEvent.total)
-          );
-        },
-      };
-
       let filePath;
 
       if (file.file.webkitRelativePath) {
@@ -130,16 +119,56 @@ export default {
         filePath = '/';
       }
 
-      let data = new FormData();
-      data.append('file', file.file);
-      data.append('current', this.current + '/' + filePath);
-      data.append('visibility', this.visibility);
+      if (window.Vapor) {
+        window.Vapor.store(file.file, {
+          progress: progress => {
+            file.progress = Math.round(progress * 100);
+          }
+        }).then(response => {
+          let data = new FormData();
+          data.append('vaporFile[uuid]', response.uuid);
+          data.append('vaporFile[key]', response.key);
+          data.append('vaporFile[filename]', response.filename);
+          data.append('vaporFile[extension]', response.extension);
+          data.append('current', this.current + '/' + filePath);
+          data.append('visibility', this.visibility);
 
-      if (this.type == 'files') {
-        data.append('rules', JSON.stringify(this.rules));
-        this.uploadFileToServer(file, data, config);
+          if (this.type == 'files') {
+            data.append('rules', JSON.stringify(this.rules));
+            this.uploadFileToServer(file, data, {});
+          } else {
+            this.uploadFolderToServer(file, data, {});
+          }
+        }).catch(error => {
+          file.error = true;
+          Nova.error(this.__('Error uploading the file. Check your MaxFilesize or permissions'), { type: 'error' });
+          setTimeout(() => {
+            this.$emit('removeFile', file.id);
+          }, 1000);
+        });
       } else {
-        this.uploadFolderToServer(file, data, config);
+        let config = {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          onUploadProgress: progressEvent => {
+            file.progress = parseInt(
+              Math.round((progressEvent.loaded * 100) / progressEvent.total)
+            );
+          },
+        };
+
+        let data = new FormData();
+        data.append('file', file.file);
+        data.append('current', this.current + '/' + filePath);
+        data.append('visibility', this.visibility);
+
+        if (this.type == 'files') {
+          data.append('rules', JSON.stringify(this.rules));
+          this.uploadFileToServer(file, data, config);
+        } else {
+          this.uploadFolderToServer(file, data, config);
+        }
       }
     },
 
@@ -214,7 +243,7 @@ export default {
         })
         .catch(() => {
           this.error = true;
-          Nova.error(this.__('Error uploading the file. Check your MaxFilesize or permissions'), { type: 'error' });
+        Nova.error(this.__('Error uploading the file. Check your MaxFilesize or permissions'), { type: 'error' });
           setTimeout(() => {
             this.$emit('removeFile', file.id);
           }, 1000);
