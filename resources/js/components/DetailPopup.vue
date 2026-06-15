@@ -63,9 +63,6 @@
               <template v-else-if="info.type == 'pdf'">
                 <object :data="info.url" type="application/pdf" width="100%" height="100%">
                   <iframe :src="info.url" width="100%" height="100%" style="border: none;">
-                    <object class="no-preview" v-html="info.image">
-
-                    </object>
                   </iframe>
                 </object>
               </template>

@@ -11,6 +11,13 @@ class NovaExtension {
         this.name = name
     }
 
+    webpackPlugins() {
+        return new webpack.ProvidePlugin({
+            _: 'lodash',
+            Errors: ['laravel-nova', 'Errors'],
+        })
+    }
+
     webpackConfig(webpackConfig) {
         webpackConfig.externals = {
             vue: 'Vue',

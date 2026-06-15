@@ -14,7 +14,7 @@
 </template>
 <script>
 import { HandlesValidationErrors } from 'laravel-nova'
-import { Errors } from 'form-backend-validation'
+import { Errors } from 'laravel-nova'
 
 export default {
   mixins: [HandlesValidationErrors],

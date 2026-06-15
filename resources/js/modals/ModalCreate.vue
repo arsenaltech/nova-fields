@@ -59,7 +59,7 @@
 </template>
 
 <script>
-import {InteractsWithResourceInformation} from '../../../../../laravel/nova/resources/js/mixins';
+import {InteractsWithResourceInformation} from '@/mixins';
 import { Errors } from 'laravel-nova'
 
 export default {

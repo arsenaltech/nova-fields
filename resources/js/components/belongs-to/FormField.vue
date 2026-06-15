@@ -126,8 +126,8 @@
 
 <script>
 import storage from '../../storage/BelongsToFieldStorage'
-import TogglesTrashed from '../../../../../../laravel/nova/resources/js/mixins/TogglesTrashed';
-import PerformsSearches from '../../../../../../laravel/nova/resources/js/mixins/PerformsSearches';
+import TogglesTrashed from '@/mixins/TogglesTrashed';
+import PerformsSearches from '@/mixins/PerformsSearches';
 import {
   HandlesValidationErrors
 } from 'laravel-nova'
