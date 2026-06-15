@@ -6,15 +6,16 @@
    */
 
 /*!
-  * vue-draggable-next v2.2.0
-  * (c) 2023 Anish George
-  * @license MIT
-  */
-
-/*!
  * Determine if an object is a Buffer
  *
  * @author   Feross Aboukhadijeh <https://feross.org>
+ * @license  MIT
+ */
+
+/*!
+ * The buffer module from node.js, for the browser.
+ *
+ * @author   Feross Aboukhadijeh <http://feross.org>
  * @license  MIT
  */
 
@@ -60,13 +61,13 @@
  */
 
 /*!
- * Viewer.js v1.11.6
+ * Viewer.js v1.11.7
  * https://fengyuanchen.github.io/viewerjs
  *
  * Copyright 2015-present Chen Fengyuan
  * Released under the MIT license
  *
- * Date: 2023-09-17T03:16:38.052Z
+ * Date: 2024-11-24T04:32:19.116Z
  */
 
 /*!
@@ -82,11 +83,15 @@
 * Surmon <https://github.com/surmon-china>
 */
 
-/*! Element Plus Icons Vue v2.3.1 */
+/*! Axios v1.18.0 Copyright (c) 2026 Matt Zabriskie and contributors */
+
+/*! Element Plus Icons Vue v2.3.2 */
 
 /*! https://mths.be/punycode v1.4.0 by @mathias */
 
-/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/facebook/regenerator/blob/main/LICENSE */
+/*! ieee754. BSD-3-Clause License. Feross Aboukhadijeh <https://feross.org/opensource> */
+
+/*! regenerator-runtime -- Copyright (c) 2014-present, Facebook, Inc. -- license (MIT): https://github.com/babel/babel/blob/main/packages/babel-helpers/LICENSE */
 
 /**
  * @license
@@ -111,7 +116,7 @@
  *
  * @copyright 2024 Jason Mulligan <jason.mulligan@avoidwork.com>
  * @license BSD-3-Clause
- * @version 10.1.2
+ * @version 10.1.6
  */
 
 /**!
