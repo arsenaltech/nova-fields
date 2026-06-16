@@ -6,7 +6,9 @@ use Laravel\Nova\Fields\Boolean as NovaBoolean;
 
 class Boolean extends NovaBoolean
 {
-    use Configurable;
+    use Configurable {
+        resolveAttribute as traitResolveAttribute;
+    }
 
     /**
      * The base input classes of the field.
@@ -92,5 +94,18 @@ class Boolean extends NovaBoolean
     public function hideBooleanLabel(): Boolean
     {
         return $this->withMeta(['hideBooleanLabel' => true]);
+    }
+
+    /**
+     * Resolve the given attribute from the given resource.
+     *
+     * @param mixed $resource
+     * @param string $attribute
+     * @return bool|null
+     */
+    protected function resolveAttribute($resource, string $attribute): ?bool
+    {
+        $this->setResourceId(data_get($resource, 'id'));
+        return parent::resolveAttribute($resource, $attribute);
     }
 }

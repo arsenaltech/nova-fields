@@ -287,7 +287,7 @@ trait Configurable
      *
      * @return mixed
      */
-    protected function resolveAttribute($resource, $attribute)
+    protected function resolveAttribute($resource, string $attribute): mixed
     {
         $this->setResourceId(data_get($resource, 'id'));
         return parent::resolveAttribute($resource, $attribute);

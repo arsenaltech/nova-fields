@@ -109,7 +109,7 @@ class ID extends NovaID implements JsonSerializable
      * @param string $attribute
      * @return mixed
      */
-    protected function resolveAttribute($resource, $attribute)
+    protected function resolveAttribute($resource, string $attribute): string|int|null
     {
         if (!is_null($resource)) {
             $pivotValue = optional($resource->pivot)->getKey();
