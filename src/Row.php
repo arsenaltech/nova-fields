@@ -292,7 +292,7 @@ class Row extends Field implements JsonSerializable
      * @param  string|null  $attribute
      * @return void
      */
-    public function resolve($resource, $attribute = null): void
+    public function resolve($resource, ?string $attribute = null): void
     {
         $attribute = $attribute ?? $this->attribute;
 

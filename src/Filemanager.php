@@ -310,7 +310,7 @@ class Filemanager extends Field implements Cover
      * @param  \Laravel\Nova\Http\Requests\NovaRequest  $request
      * @return bool
      */
-    public function isReadonly(NovaRequest $request)
+    public function isReadonly(NovaRequest $request): bool
     {
         return with($this->readonlyCallback, function ($callback) use ($request) {
             if ($callback === true || (is_callable($callback) && call_user_func($callback, $request))) {

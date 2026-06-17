@@ -27,7 +27,7 @@ class DynamicSelect extends NovaField
     protected $dependentValues = [];
     protected $options;
 
-    public function resolve($resource, $attribute = null)
+    public function resolve($resource, ?string $attribute = null): void
     {
         $this->extractDependentValues($resource);
 

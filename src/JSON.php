@@ -116,7 +116,7 @@ class JSON extends Field implements JsonSerializable
      * @param  string|null  $attribute
      * @return void
      */
-    public function resolve($resource, $attribute = null): void
+    public function resolve($resource, ?string $attribute = null): void
     {
         $attribute = $attribute ?? $this->attribute;
 
@@ -152,7 +152,7 @@ class JSON extends Field implements JsonSerializable
      * @param  string  $attribute
      * @return void
      */
-    protected function fillAttributeFromRequest(NovaRequest $request, $requestAttribute, $model, $attribute): void
+    protected function fillAttributeFromRequest(NovaRequest $request, string $requestAttribute, object $model, string $attribute): void
     {
         $this->fields->each(function ($field) use ($request, $model, $attribute) {
             $field->fillInto($request, $model, $attribute . '->' . $field->attribute, $attribute . '.' . $field->attribute);
@@ -179,7 +179,7 @@ class JSON extends Field implements JsonSerializable
      * @param  string|null  $attribute
      * @return void
      */
-    public function resolveForDisplay($resource, $attribute = null): void
+    public function resolveForDisplay($resource, ?string $attribute = null): void
     {
         $attribute = $attribute ?? $this->attribute;
 
