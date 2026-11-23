@@ -31,7 +31,7 @@ class DynamicSelect extends NovaField
     {
         $this->extractDependentValues($resource);
 
-        return parent::resolve($resource, $attribute);
+        parent::resolve($resource, $attribute);
     }
 
     public function dependsOn($field)
