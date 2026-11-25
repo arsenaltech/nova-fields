@@ -12,50 +12,52 @@
         <div class="flex items-center">
           <search-input
             v-if="isSearchable && !isLocked"
+            :dusk="`${field.resourceName}-search-input`"
             :data-testid="`${field.resourceName}-search-input`"
             @input="performSearch"
             @clear="clearSelection"
             @selected="selectResource"
             :error="hasError"
-            :value="selectedResource"
-            :data="availableResources"
+            v-model="selectedResource"
+            :options="availableResources"
             trackBy="value"
             searchBy="display"
             class="flex-grow mb-2"
           >
-            <div
-              slot="default"
-              v-if="selectedResource"
-              class="flex items-center"
-            >
+            <template #default>
               <div
-                v-if="selectedResource.avatar"
-                class="mr-3"
+                v-if="selectedResource"
+                class="flex items-center"
               >
-                <img
-                  :src="selectedResource.avatar"
-                  class="w-8 h-8 rounded-full block"
+                <div
+                  v-if="selectedResource.avatar"
+                  class="mr-3"
                 >
+                  <img
+                    :src="selectedResource.avatar"
+                    class="w-8 h-8 rounded-full block"
+                  >
+                </div>
+                {{ selectedResource.display }}
               </div>
-              {{ selectedResource.display }}
-            </div>
+            </template>
 
-            <div
-              slot="option"
-              slot-scope="{ option }"
-              class="flex items-center"
-            >
+            <template #option="{ option }">
               <div
-                v-if="option.avatar"
-                class="mr-3"
+                class="flex items-center"
               >
-                <img
-                  :src="option.avatar"
-                  class="w-8 h-8 rounded-full block"
+                <div
+                  v-if="option.avatar"
+                  class="mr-3"
                 >
+                  <img
+                    :src="option.avatar"
+                    class="w-8 h-8 rounded-full block"
+                  >
+                </div>
+                {{ option.display }}
               </div>
-              {{ option.display }}
-            </div>
+            </template>
           </search-input>
 
           <select

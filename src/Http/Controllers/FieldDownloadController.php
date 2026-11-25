@@ -2,10 +2,10 @@
 
 namespace R64\NovaFields\Http\Controllers;
 
-use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Laravel\Nova\Fields\File;
 use Laravel\Nova\Http\Requests\NovaRequest;
+use Symfony\Component\HttpFoundation\Response;
 
 class FieldDownloadController extends Controller
 {

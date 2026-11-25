@@ -289,7 +289,8 @@ trait Configurable
      */
     protected function resolveAttribute($resource, string $attribute): mixed
     {
-        $this->setResourceId(data_get($resource, 'id'));
+        $id = $resource instanceof \Illuminate\Database\Eloquent\Model ? $resource->getKey() : data_get($resource, 'id');
+        $this->setResourceId($id);
         return parent::resolveAttribute($resource, $attribute);
     }
     /**

@@ -11,7 +11,9 @@
       <SelectControl
           :id="field.attribute"
           :dusk="field.attribute"
-          v-model:selected="value"
+          v-model="value"
+          :options="options"
+          @selected="handleSelected"
           @change="handleChange"
           class="w-full"
           :select-classes="{ 'form-input-border-error': hasError }"
@@ -19,16 +21,6 @@
       >
         <option value="" selected disabled>
           {{ placeholder }}
-        </option>
-
-        <option
-            v-for="option in options"
-            :key="option.value"
-            :value="option.value"
-            :selected="option.value == value"
-            :disabled="option.group"
-        >
-          {{ option.label }}
         </option>
       </SelectControl>
 
@@ -110,8 +102,15 @@ export default {
     /**
      * Handle the selection change event.
      */
-    handleChange(value) {
-      this.value = value;
+    handleSelected(option) {
+      if (option) {
+        this.handleChange(option.value);
+      }
+    },
+
+    handleChange(event) {
+      let val = event && event.target ? event.target.value : event;
+      this.value = val;
       const data = {'field':this.field,'value':this.value};
       Nova.$emit("updateConfigurableAttributes",data);
       this.$emit('updateFieldvalue', this.value) //[EC-35185] Added Emit Which listning in Product -> Custom Media To update Data In Parent (Don't remove it.)

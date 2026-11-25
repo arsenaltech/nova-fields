@@ -7,11 +7,11 @@
     :field-classes="panelFieldClasses"
     :wrapper-classes="panelWrapperClasses"
   >
-    <template #value class="text-90">
+    <template #value>
       <span
         :class="[dotClasses, statusClass]"
       />
-      <span v-if="!field.hideBooleanLabel">{{ label }}</span>
+      <span v-if="!field.hideBooleanLabel" class="text-90">{{ label }}</span>
     </template>
   </panel-item>
 </template>

@@ -165,7 +165,7 @@ export default {
     },
   },
 
-  beforeDestroy() {
+  beforeUnmount() {
     this.flatpickr.destroy()
   },
 }

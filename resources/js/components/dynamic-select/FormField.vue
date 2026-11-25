@@ -57,7 +57,7 @@ export default {
     }
     window.addEventListener('scroll', this.repositionDropdown);
   },
-  beforeDestroy() {
+  beforeUnmount() {
     if (this.field.dependsOn) {
       Nova.$off("nova-fields-dynamic-select-changed-" + this.field.dependsOn, this.onDependencyChanged);
     }

@@ -39,7 +39,7 @@ export default {
 
   data: () => ({ draftId: uuidv4() }),
 
-  beforeDestroy() {
+  beforeUnmount() {
     this.cleanUp()
   },
 

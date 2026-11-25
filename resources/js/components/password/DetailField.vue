@@ -7,11 +7,9 @@
     :field-classes="panelFieldClasses"
     :wrapper-classes="panelWrapperClasses"
   >
-  <template
-    #value
-    class="text-90"
-    v-html="maskLabel"
-  />
+  <template #value>
+    <span class="text-90" v-html="maskLabel" />
+  </template>
   </r64-panel-item>
 </template>
 

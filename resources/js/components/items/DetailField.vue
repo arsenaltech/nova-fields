@@ -7,15 +7,17 @@
       :field-classes="panelFieldClasses"
       :wrapper-classes="panelWrapperClasses"
   >
-    <div #value>
-      <component
-          :item="item"
-          :key="index"
-          v-bind="$props"
-          :is="field.detailItemComponent"
-          v-for="(item, index) in field.value"
-      />
-    </div>
+    <template #value>
+      <div>
+        <component
+            :item="item"
+            :key="index"
+            v-bind="$props"
+            :is="field.detailItemComponent"
+            v-for="(item, index) in field.value"
+        />
+      </div>
+    </template>
 
   </r64-panel-item>
 </template>

@@ -63,21 +63,22 @@
           @confirm="removeRow"
           @close="rowToRemove = false"
         >
-          <div
-            slot-scope
-            class="p-8"
-          >
-            <heading
-              :level="2"
-              class="mb-6"
-              v-text="__('Delete Row')"
-            />
+          <template #default>
+            <div
+              class="p-8"
+            >
+              <heading
+                :level="2"
+                class="mb-6"
+                v-text="__('Delete Row')"
+              />
 
-            <p
-              class="text-80 leading-normal"
-              v-text="__('Are you sure you want to delete this row?')"
-            />
-          </div>
+              <p
+                class="text-80 leading-normal"
+                v-text="__('Are you sure you want to delete this row?')"
+              />
+            </div>
+          </template>
         </delete-resource-modal>
       </transition>
       <p

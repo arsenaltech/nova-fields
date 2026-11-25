@@ -6,16 +6,19 @@
     :field-classes="panelFieldClasses"
     :wrapper-classes="panelWrapperClasses"
   >
-    <r64-excerpt
-      #value
-      :content="field.value"
-      :excerpt-classes="excerptClasses"
-      :show-label="showContentLabel"
-      :hide-label="hideContentLabel"
-      :should-show="field.shouldShow"
-    >
-      <TableWrapper slot="content" :field="field" />
-    </r64-excerpt>
+    <template #value>
+      <r64-excerpt
+        :content="field.value"
+        :excerpt-classes="excerptClasses"
+        :show-label="showContentLabel"
+        :hide-label="hideContentLabel"
+        :should-show="field.shouldShow"
+      >
+        <template #content>
+          <TableWrapper :field="field" />
+        </template>
+      </r64-excerpt>
+    </template>
   </r64-panel-item>
 </template>
 

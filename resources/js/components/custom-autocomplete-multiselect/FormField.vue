@@ -33,19 +33,19 @@
           :loading="isLoading"
           :clearOnSelect="field.clearOnSelect || false"
       >
-        <template slot="maxElements">
+        <template #maxElements>
           {{ __('novaMultiselect.maxElements', { max: String(field.max || '') }) }}
         </template>
 
-        <template slot="noResult">
+        <template #noResult>
           {{ __('novaMultiselect.noResult') }}
         </template>
 
-        <template slot="noOptions">
+        <template #noOptions>
           {{ field.apiUrl ? __('novaMultiSelect.startTypingForOptions') : __('novaMultiselect.noOptions') }}
         </template>
 
-        <template slot="clear">
+        <template #clear>
           <div
               class="multiselect__clear"
               v-if="field.nullable && (isMultiselect ? value.length : value)"
@@ -135,7 +135,7 @@ export default {
     });
   },
 
-  destroyed() {
+  unmounted() {
     window.removeEventListener('scroll', this.repositionDropdown);
     if (this.field.distinct) Nova.$off(`multiselect-${this.field.distinct}-distinct`);
   },

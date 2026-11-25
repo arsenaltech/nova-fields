@@ -62,32 +62,31 @@ export default {
   }),
 
   mounted() {
-    const listenToCreateModalClosed = () => {
-      if (this.isListeningToChanges === true) {
-        this.registerChangeListener()
-      }
-    }
-
     Nova.$on('create-relation-modal-opened', this.removeChangeListener)
-    Nova.$on('create-relation-modal-closed', listenToCreateModalClosed)
+    Nova.$on('create-relation-modal-closed', this.handleRelationModalClosed)
 
     if (this.shouldRegisterInitialListener) {
       this.registerChangeListener()
-    }else if(!this.field.showCustomize){
+    } else if (!this.field.showCustomize) {
       this.registerChangeListener()
       this.isListeningToChanges = false
       this.field.readonly = false
       this.field.extraAttributes.readonly = false
     }
-    const emitter = mitt()
-    emitter.on('hook:beforeDestroy', () => {
-      Nova.$off('create-relation-modal-opened', this.removeChangeListener)
-      Nova.$off('create-relation-modal-closed', listenToCreateModalClosed)
-      this.removeChangeListener()
-    })
+  },
+
+  beforeUnmount() {
+    Nova.$off('create-relation-modal-opened', this.removeChangeListener)
+    Nova.$off('create-relation-modal-closed', this.handleRelationModalClosed)
+    this.removeChangeListener()
   },
 
   methods: {
+    handleRelationModalClosed() {
+      if (this.isListeningToChanges === true) {
+        this.registerChangeListener()
+      }
+    },
     changeListener(value) {
       return value => {
         this.value = slugify(value, this.field.separator)

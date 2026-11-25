@@ -1,24 +1,26 @@
 <template id="liquor-json-viewer">
     <div class="json-viewer">
         <tree :data="treeData" :options="treeOptions">
-            <span :class="[node.data.type]" class="viewer-item" slot-scope="{ node }">
-                <span class="viewer-item__key" v-if="node.hasChildren()">
-                    {{ node.text }}
-                    <span v-if="node.collapsed()">
-                        <template v-if="node.data.type == 'array'">
-                            [ {{ node.children.length }} ]
-                        </template>
-                        <template v-else="">
-                            { {{ node.children.length }} }
-                        </template>
+            <template #default="{ node }">
+                <span :class="[node.data.type]" class="viewer-item">
+                    <span class="viewer-item__key" v-if="node.hasChildren()">
+                        {{ node.text }}
+                        <span v-if="node.collapsed()">
+                            <template v-if="node.data.type == 'array'">
+                                [ {{ node.children.length }} ]
+                            </template>
+                            <template v-else="">
+                                { {{ node.children.length }} }
+                            </template>
+                        </span>
+                    </span>
+                    <span class="viewer-item__prop" v-else="">
+                        <span class="viewer-item__value">
+                            {{ node.data.objectKey }}
+                        </span>
                     </span>
                 </span>
-                <span class="viewer-item__prop" v-else="">
-                    <span class="viewer-item__value">
-                        {{ node.data.objectKey }}
-                    </span>
-                </span>
-            </span>
+            </template>
         </tree>
     </div>
 </template>
