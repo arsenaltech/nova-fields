@@ -26,11 +26,24 @@ export default {
                 )
             );
 
-            this.$parent.$children.filter(c => c.field).forEach(component => {
-                if (fieldsToToggle.indexOf(component.field.attribute) !== -1) {
-                    this.toggleFields[component.field.attribute] = component;
+            const walk = (vnode) => {
+                if (!vnode) return;
+                if (vnode.component) {
+                    const component = vnode.component.proxy;
+                    if (component && component.field && fieldsToToggle.indexOf(component.field.attribute) !== -1) {
+                        this.toggleFields[component.field.attribute] = component;
+                    }
+                    walk(vnode.component.subTree);
                 }
-            });
+                if (Array.isArray(vnode.children)) {
+                    for (const child of vnode.children) {
+                        if (child && typeof child === 'object') walk(child);
+                    }
+                }
+            };
+            if (this.$ && this.$.parent && this.$.parent.subTree) {
+                walk(this.$.parent.subTree);
+            }
         },
         generateFieldMap() {
 

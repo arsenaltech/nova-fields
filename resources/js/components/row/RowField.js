@@ -69,7 +69,7 @@ export default {
         })
       }, 100)
 
-      this.$set(this.values, this.values.length, obj)
+      this.values.push(obj)
     }
   }
 }
