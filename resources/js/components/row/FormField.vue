@@ -176,7 +176,7 @@ export default {
   created() {
     this.fields.forEach((value, key) => {
       if (value.component === 'nova-fields-belongs-to') {
-        this.$set(this.dataSets, key + '-' + value.component, [])
+        this.dataSets[key + '-' + value.component] = []
       }
     })
   },

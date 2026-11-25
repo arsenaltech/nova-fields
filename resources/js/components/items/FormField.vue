@@ -104,7 +104,7 @@
 </style>
 
 <script>
-import draggable from 'vuedraggable'
+import { VueDraggableNext } from 'vue-draggable-next'
 import { FormField, HandlesValidationErrors } from 'laravel-nova'
 import R64Field from '../../mixins/R64Field'
 
@@ -113,7 +113,7 @@ export default {
 
     props: ['resourceName', 'resourceId', 'field'],
 
-    components: { draggable },
+    components: { draggable: VueDraggableNext },
 
     data: function() {
         return {
@@ -154,7 +154,7 @@ export default {
 
         updateItem(index, event)
         {
-            this.$set(this.items, index, event.target.value)
+            this.items[index] = event.target.value
         },
 
 		removeItem (index) {

@@ -9,7 +9,7 @@ mix
     .sass('resources/sass/field.scss', 'css')
     .nova('64robots/nova-fields')
     .alias({
-        '@': path.resolve(__dirname, '../../laravel/nova/resources/js/'),
+        '@': 'vendor/laravel/nova/resources/js/',
     })
     .webpackConfig({
         resolve: {

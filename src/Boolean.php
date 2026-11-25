@@ -105,7 +105,8 @@ class Boolean extends NovaBoolean
      */
     protected function resolveAttribute($resource, string $attribute): ?bool
     {
-        $this->setResourceId(data_get($resource, 'id'));
+        $id = $resource instanceof \Illuminate\Database\Eloquent\Model ? $resource->getKey() : data_get($resource, 'id');
+        $this->setResourceId($id);
         return parent::resolveAttribute($resource, $attribute);
     }
 }

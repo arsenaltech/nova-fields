@@ -54,7 +54,8 @@ export default {
     this.fields.forEach(field => {
       this.$watch(
         () => {
-          return this.$refs[field.attribute][0].$children[0].value
+          const item = this.$refs[field.attribute]?.[0]
+          return item?.$refs?.childComponent?.value
         },
         value => {
           let currentJson = JSON.parse(this.value || '{}')

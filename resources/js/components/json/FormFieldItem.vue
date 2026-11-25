@@ -1,5 +1,6 @@
 <template>
   <component
+    ref="childComponent"
     v-show="shouldBeShown"
     :is="`form-${field.component}`"
     :errors="itemErrors"

@@ -87,7 +87,7 @@ import Multiselect from '@vueform/multiselect';
 import {VueDraggableNext} from 'vue-draggable-next'
 import debounce from 'lodash/debounce';
 import R64Field from '../../mixins/R64Field'
-import _ from "loadsh";
+import _ from "lodash";
 import axios from "axios";
 
 export default {

@@ -59,14 +59,14 @@ import SimpleRepeatableDetailField from './components/simple-repetable/DetailFie
 import SimpleRepeatableFormField from './components/simple-repetable/FormField.vue'
 import BlankDivFormField from './components/blank-div/FormField.vue'
 import DynamicSelectFormField from './components/dynamic-select/FormField.vue';
-// import BelongsToDetailField from './components/belongs-to/DetailField.vue'
-// import BelongsToFormField from './components/belongs-to/FormField.vue'
-// import IdIndexField from './components/id/IndexField.vue'
-// import NovaMultiselectDetailFieldValue from './components/multiselect/NovaMultiselectDetailFieldValue.vue'
-// import ItemsIndexField from './components/items/IndexField.vue'
-// import ItemsDetailField from './components/items/DetailField.vue'
-// import ItemDetailField from './components/items/DetailFieldItem.vue'
-// import ItemsFormField from './components/items/FormField.vue'
+import BelongsToDetailField from './components/belongs-to/DetailField.vue'
+import BelongsToFormField from './components/belongs-to/FormField.vue'
+import IdIndexField from './components/id/IndexField.vue'
+import NovaMultiselectDetailFieldValue from './components/multiselect/NovaMultiselectDetailFieldValue.vue'
+import ItemsIndexField from './components/items/IndexField.vue'
+import ItemsDetailField from './components/items/DetailField.vue'
+import ItemDetailField from './components/items/DetailFieldItem.vue'
+import ItemsFormField from './components/items/FormField.vue'
 
 Nova.booting((app, store) => {
     /** Shared */
@@ -80,9 +80,9 @@ Nova.booting((app, store) => {
     app.component('form-nova-fields-text', TextFormField)
 
     /** ID */
-    // app.component('index-nova-fields-id',IdIndexField)
-    app.component('detail-nova-fields-id',TextDetailField)
-    app.component('form-nova-fields-id',TextFormField)
+    app.component('index-nova-fields-id', IdIndexField)
+    app.component('detail-nova-fields-id', TextDetailField)
+    app.component('form-nova-fields-id', TextFormField)
 
     /** Slug */
     app.component('index-nova-fields-slug',TextIndexField)
@@ -103,20 +103,17 @@ Nova.booting((app, store) => {
     app.component('index-nova-fields-multiselect', MultiselectIndexField);
     app.component('detail-nova-fields-multiselect', MultiselectDetailField);
     app.component('form-nova-fields-multiselect', MultiselectFormField);
-    // Allow user to overwrite nova-multiselect-detail-field-value
-    // if (!app.options.components['nova-multiselect-detail-field-value']) {
-    //   app.component('nova-multiselect-detail-field-value',NovaMultiselectDetailFieldValue);
-    // }
+    app.component('nova-multiselect-detail-field-value', NovaMultiselectDetailFieldValue);
 
     /** MultiSelect */
     app.component('index-nova-fields-custom-autocomplete-multiselect', CustomAutoCompleteMultiSelectIndexField);
     app.component('detail-nova-fields-custom-autocomplete-multiselect', CustomAutoCompleteMultiSelectDetailField);
     app.component('form-nova-fields-custom-autocomplete-multiselect', CustomAutoCompleteMultiSelectFormField);
     /** Items */
-    // app.component('index-nova-fields-items', ItemsIndexField)
-    // app.component('detail-nova-fields-items', ItemsDetailField)
-    // app.component('form-nova-fields-items', ItemsFormField)
-    // app.component('detail-nova-fields-item', ItemDetailField)
+    app.component('index-nova-fields-items', ItemsIndexField)
+    app.component('detail-nova-fields-items', ItemsDetailField)
+    app.component('form-nova-fields-items', ItemsFormField)
+    app.component('detail-nova-fields-item', ItemDetailField)
     //
     // /** FileManager */
     app.component('index-nova-fields-filemanager', FileManagerIndexField);
@@ -193,8 +190,8 @@ Nova.booting((app, store) => {
 
     /** BelongsTo */
     app.component('index-nova-fields-belongs-to', BelongsToIndexField)
-    // app.component('detail-nova-fields-belongs-to', BelongsToDetailField)
-    // app.component('form-nova-fields-belongs-to', BelongsToFormField)
+    app.component('detail-nova-fields-belongs-to', BelongsToDetailField)
+    app.component('form-nova-fields-belongs-to', BelongsToFormField)
 
     // app.component('nova-filemanager',Tool);
     Nova.inertia('Filemanager', Tool)
